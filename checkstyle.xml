@@ -250,8 +250,11 @@
 	</module>
 	<!--	<module name="NewlineAtEndOfFile"/>-->
 	<module name="SuppressWarningsFilter"/>
+<<<<<<< HEAD
 	<module name="SuppressionFilter">
 		<property name="file" value="suppressions.xml"/>
 		<property name="optional" value="false"/>
 	</module>
+=======
+>>>>>>> db1473a (Init)
 </module>
