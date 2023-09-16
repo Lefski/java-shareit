@@ -1,10 +1,12 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.service;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.storage.InMemoryUserStorage;
 
 import java.util.List;
 

@@ -9,8 +9,8 @@ import ru.practicum.shareit.item.Storage.ItemStorage;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.InMemoryUserStorage;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.storage.InMemoryUserStorage;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
