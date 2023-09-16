@@ -8,8 +8,8 @@ import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.ErrorResponse;
-import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.service.UserService;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class UserController {
 
     @PatchMapping("/{id}")
     public User updateUser(@PathVariable Integer id, @RequestBody UserDto updatedUser) {
-        return userService.updateUser(id,UserMapper.toUser(updatedUser));
+        return userService.updateUser(id, UserMapper.toUser(updatedUser));
     }
 
     @DeleteMapping("/{id}")

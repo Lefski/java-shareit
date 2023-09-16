@@ -9,7 +9,7 @@ public class ItemDto {
     private Boolean available;
     private Integer requestId;
 
-    public ItemDto(){
+    public ItemDto() {
 
     }
 
