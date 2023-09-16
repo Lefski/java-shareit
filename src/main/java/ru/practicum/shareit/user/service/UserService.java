@@ -45,11 +45,16 @@ public class UserService {
             logValidationUser();
             throw new ValidationException("Имени нет или оно пустое", HttpStatus.BAD_REQUEST);
         }
+        if (user.getEmail().length() - user.getEmail().replace("@", "").length() > 1) {
+            logValidationUser();
+            throw new ValidationException("Некорректный адрес электронной почты, ошибка в употреблении @", HttpStatus.BAD_REQUEST);
+        }
         validationEmail(user);
     }
 
     private void validationEmail(User user) {
         List<User> existingUsers = userStorage.getUsers();
+
         for (User existingUser : existingUsers) {
             if (existingUser.getEmail().equals(user.getEmail()) && existingUser.getId() != user.getId()) {
                 logValidationUser();

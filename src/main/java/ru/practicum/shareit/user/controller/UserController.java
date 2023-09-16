@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.ErrorResponse;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.model.User;
@@ -20,8 +22,9 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    public User createUser(@RequestBody UserDto user) {
+
+        return userService.createUser(UserMapper.toUser(user));
     }
 
     @GetMapping
@@ -35,8 +38,8 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public User updateUser(@PathVariable Integer id, @RequestBody User updatedUser) {
-        return userService.updateUser(id, updatedUser);
+    public User updateUser(@PathVariable Integer id, @RequestBody UserDto updatedUser) {
+        return userService.updateUser(id,UserMapper.toUser(updatedUser));
     }
 
     @DeleteMapping("/{id}")
