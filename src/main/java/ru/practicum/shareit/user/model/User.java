@@ -9,7 +9,7 @@ public class User {
     private int id;
     private String name;
     @Email
-    private String email;// TODO: сделать проверку на уникальность при создании
+    private String email;
 
     public User(String name, String email) {
         this.name = name;
