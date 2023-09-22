@@ -20,7 +20,7 @@ public class CommentMapper {
     private final UserRepository userRepository;
 
     public CommentDto toCommentDto(Comment comment) {
-        return new CommentDto(comment.getId(), comment.getComment(), comment.getItem(), comment.getAuthor(), comment.getCreated(), comment.getAuthor().getName());
+        return new CommentDto(comment.getId(), comment.getText(), comment.getItem(), comment.getAuthor(), comment.getCreated(), comment.getAuthor().getName());
 
     }
 

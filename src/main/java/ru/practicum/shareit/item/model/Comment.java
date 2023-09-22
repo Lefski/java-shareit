@@ -15,7 +15,7 @@ public class Comment {
     Integer id;
 
     @Column(name = "comment")
-    String comment;
+    String text;
 
     @JoinColumn(name = "item_id")
     @ManyToOne(fetch = FetchType.EAGER)
@@ -28,8 +28,9 @@ public class Comment {
     @Column(name = "created")
     LocalDateTime created;
 
-    public Comment(String comment, Item item, User author, LocalDateTime created) {
-        this.comment = comment;
+
+    public Comment(String text, Item item, User author, LocalDateTime created) {
+        this.text = text;
         this.item = item;
         this.author = author;
         this.created = created;

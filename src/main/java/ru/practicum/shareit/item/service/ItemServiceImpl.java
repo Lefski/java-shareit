@@ -79,7 +79,14 @@ public class ItemServiceImpl implements ItemService {
         if (checkItem.getOwner().getId() == userId) {
             itemDtoWithBookings = checkItemBookings(itemDtoWithBookings, itemId);
         }
-        itemDtoWithBookings.setComments(commentRepository.findAllByItem_Id(itemId));
+        List<Comment> comments = commentRepository.findAllByItem_Id(itemId);
+        List<CommentDto> commentsDto = new ArrayList<>();
+        for (Comment comment : comments) {
+            CommentDto commentDto = commentMapper.toCommentDto(comment);
+            commentDto.setAuthorName(comment.getAuthor().getName());
+            commentsDto.add(commentDto);
+        }
+        itemDtoWithBookings.setComments(commentsDto);
         return itemDtoWithBookings;
     }
 
@@ -90,7 +97,14 @@ public class ItemServiceImpl implements ItemService {
         for (Item item : itemList) {
             ItemDtoWithBookings itemDtoWithBooking = ItemMapper.toItemDtoWithBookings(item);
             itemDtoWithBooking = checkItemBookings(itemDtoWithBooking, ownerId);
-            itemDtoWithBooking.setComments(commentRepository.findAllByItem_Id(itemDtoWithBooking.getId()));
+            List<Comment> comments = commentRepository.findAllByItem_Id(itemDtoWithBooking.getId());
+            List<CommentDto> commentsDto = new ArrayList<>();
+            for (Comment comment : comments) {
+                CommentDto commentDto = commentMapper.toCommentDto(comment);
+                commentDto.setAuthorName(comment.getAuthor().getName());
+                commentsDto.add(commentDto);
+            }
+            itemDtoWithBooking.setComments(commentsDto);
             itemDtos.add(itemDtoWithBooking);
         }
         Comparator<ItemDtoWithBookings> idComparator = Comparator.comparingInt(ItemDtoWithBookings::getId);
@@ -139,7 +153,9 @@ public class ItemServiceImpl implements ItemService {
         }
 
         Comment comment = commentRepository.save(commentMapper.toComment(commentDto));
-        return commentMapper.toCommentDto(comment);
+        CommentDto commentDto1 = commentMapper.toCommentDto(comment);
+
+        return commentDto1;
     }
 
     @Override
