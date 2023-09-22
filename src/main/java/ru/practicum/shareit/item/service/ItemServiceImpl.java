@@ -73,7 +73,10 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDtoWithBookings getItemById(Integer itemId, Integer userId) {
         ItemDtoWithBookings itemDtoWithBookings = ItemMapper.toItemDtoWithBookings(repository.findById(itemId).orElseThrow(() -> new NotFoundException("Item с переданным id не существует", HttpStatus.NOT_FOUND)));
-        itemDtoWithBookings = checkItemBookings(itemDtoWithBookings);
+        Item checkItem = repository.findById(itemId).orElseThrow(() -> new NotFoundException("Item с переданным id не существует", HttpStatus.NOT_FOUND));
+        if (checkItem.getOwner().getId() == userId) {
+            itemDtoWithBookings = checkItemBookings(itemDtoWithBookings);
+        }
         itemDtoWithBookings.setComments(commentRepository.findAllByItem_Id(itemId));
         return itemDtoWithBookings;
     }
@@ -92,6 +95,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private ItemDtoWithBookings checkItemBookings(ItemDtoWithBookings itemDtoWithBooking) {
+
         List<Booking> lastBookingList = bookingRepository.findNearestPastBooking(LocalDateTime.now());
         Booking lastBooking = null;
         if (lastBookingList.size() > 0) {

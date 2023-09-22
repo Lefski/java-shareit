@@ -51,7 +51,8 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDtoWithBookings> getAllItemsByOwner(@RequestHeader("X-Sharer-User-Id") Integer ownerId) {
+    public List<ItemDtoWithBookings> getAllItemsByOwner(
+            @RequestHeader("X-Sharer-User-Id") Integer ownerId) {
         if (ownerId == null) {
             throw new ValidationException("X-Sharer-User-Id header is missing.", HttpStatus.BAD_REQUEST);
         }

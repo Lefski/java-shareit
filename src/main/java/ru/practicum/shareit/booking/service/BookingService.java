@@ -30,7 +30,7 @@ import java.util.List;
 @Slf4j
 @Transactional
 public class BookingService {
-    private final static Sort DESCENDED_SORT = Sort.by(Sort.Direction.DESC, "start");
+    private static final Sort DESCENDED_SORT = Sort.by(Sort.Direction.DESC, "start");
 
     private final BookingRepository repository;
     private final ItemRepository itemRepository;
