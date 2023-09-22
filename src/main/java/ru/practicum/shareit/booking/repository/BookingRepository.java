@@ -33,9 +33,9 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     List<Booking> findBookingsByBooker_IdAndStartIsBeforeAndEndIsAfter(int bookerId, LocalDateTime start, LocalDateTime end, Sort sort);
 
-    @Query("SELECT b FROM Booking b WHERE b.start < :currentDateTime AND b.item.id = :itemId ORDER BY b.end DESC")
-    List<Booking> findNearestPastBooking(@Param("currentDateTime") LocalDateTime currentDateTime, @Param("itemId") Integer itemId);
+    @Query("SELECT b FROM Booking b WHERE b.start < current_timestamp AND b.item.id = :itemId AND b.status = 'APPROVED' ORDER BY b.end DESC")
+    List<Booking> findNearestPastBooking(@Param("itemId") Integer itemId);
 
-    @Query("SELECT b FROM Booking b WHERE b.start > :currentDateTime AND b.item.id = :itemId ORDER BY b.end ASC")
-    List<Booking> findNearestFutureBooking(@Param("currentDateTime") LocalDateTime currentDateTime, @Param("itemId") Integer itemId);
+    @Query("SELECT b FROM Booking b WHERE b.start > current_timestamp AND b.item.id = :itemId AND b.status = 'APPROVED' ORDER BY b.end ASC")
+    List<Booking> findNearestFutureBooking(@Param("itemId") Integer itemId);
 }

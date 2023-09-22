@@ -96,7 +96,7 @@ public class ItemServiceImpl implements ItemService {
         ArrayList<ItemDtoWithBookings> itemDtos = new ArrayList<>();
         for (Item item : itemList) {
             ItemDtoWithBookings itemDtoWithBooking = ItemMapper.toItemDtoWithBookings(item);
-            itemDtoWithBooking = checkItemBookings(itemDtoWithBooking, ownerId);
+            itemDtoWithBooking = checkItemBookings(itemDtoWithBooking, item.getId());
             List<Comment> comments = commentRepository.findAllByItem_Id(itemDtoWithBooking.getId());
             List<CommentDto> commentsDto = new ArrayList<>();
             for (Comment comment : comments) {
@@ -117,14 +117,14 @@ public class ItemServiceImpl implements ItemService {
 
     private ItemDtoWithBookings checkItemBookings(ItemDtoWithBookings itemDtoWithBooking, int itemId) {
 
-        List<Booking> lastBookingList = bookingRepository.findNearestPastBooking(LocalDateTime.now(), itemId);
+        List<Booking> lastBookingList = bookingRepository.findNearestPastBooking(itemId);
         Booking lastBooking = null;
         if (lastBookingList.size() > 0) {
             lastBooking = lastBookingList.get(0);
             lastBooking.setBookerId(lastBooking.getBooker().getId());
         }
         itemDtoWithBooking.setLastBooking(lastBooking);
-        List<Booking> nextBookingList = bookingRepository.findNearestFutureBooking(LocalDateTime.now(), itemId);
+        List<Booking> nextBookingList = bookingRepository.findNearestFutureBooking(itemId);
         Booking nextBooking = null;
         if (nextBookingList.size() > 0) {
             nextBooking = nextBookingList.get(0);
