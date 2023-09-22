@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS items
     request_id   BIGINT REFERENCES requests (id),
     CONSTRAINT pk_item PRIMARY KEY (id),
     CONSTRAINT fk_item_owner FOREIGN KEY (owner_id) references users (id),
-    CONSTRAINT fk_requestor FOREIGN KEY (request_id) references requests (id)
+    CONSTRAINT fk_request FOREIGN KEY (request_id) references requests (id)
 );
 
 create table if not exists bookings
@@ -51,7 +51,7 @@ create table if not exists comments
     author_id bigint references users (id)            not null,
     created   timestamp without time zone             not null,
     constraint pk_comments primary key (id),
-    constraint fk_item foreign key (item_id) references items (id),
+    constraint fk_item_id foreign key (item_id) references items (id),
     constraint fk_author foreign key (author_id) references users (id)
 
 );
