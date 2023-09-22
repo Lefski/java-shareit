@@ -36,6 +36,9 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
 
+    @Transient
+    private int bookerId;
+
     public Booking(int id, LocalDateTime start, LocalDateTime end, Item item, User booker, BookingStatus status) {
         this.id = id;
         this.start = start;

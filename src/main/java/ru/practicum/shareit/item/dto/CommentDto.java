@@ -25,7 +25,7 @@ public class CommentDto {
         this.item = item;
         this.author = author;
         this.created = created;
-        this.authorName =  authorName;
+        this.authorName = authorName;
     }
 
     public CommentDto(Integer id, String text, Item item, User author, LocalDateTime created, String authorName) {
@@ -34,6 +34,6 @@ public class CommentDto {
         this.item = item;
         this.author = author;
         this.created = created;
-        this.authorName =  authorName;
+        this.authorName = authorName;
     }
 }

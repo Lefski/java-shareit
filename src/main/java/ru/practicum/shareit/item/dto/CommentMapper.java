@@ -19,14 +19,14 @@ public class CommentMapper {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
-    public CommentDto toCommentDto(Comment comment){
-        return new CommentDto(comment.getId(), comment.getComment(), comment.getItem(), comment.getAuthor(), comment.getCreated(),comment.getAuthor().getName());
+    public CommentDto toCommentDto(Comment comment) {
+        return new CommentDto(comment.getId(), comment.getComment(), comment.getItem(), comment.getAuthor(), comment.getCreated(), comment.getAuthor().getName());
 
     }
 
     public Comment toComment(CommentDto commentDto) {
-        User author =  userRepository.findById(commentDto.getAuthorId()).orElseThrow(() -> new NotFoundException("Автора с переданным id не существует", HttpStatus.NOT_FOUND));
-        Item item =  itemRepository.findById(commentDto.getItemId()).orElseThrow(() -> new NotFoundException("Автора с переданным id не существует", HttpStatus.NOT_FOUND));
+        User author = userRepository.findById(commentDto.getAuthorId()).orElseThrow(() -> new NotFoundException("Автора с переданным id не существует", HttpStatus.NOT_FOUND));
+        Item item = itemRepository.findById(commentDto.getItemId()).orElseThrow(() -> new NotFoundException("Автора с переданным id не существует", HttpStatus.NOT_FOUND));
 
         return new Comment(commentDto.getText(), item, author, LocalDateTime.now());
     }

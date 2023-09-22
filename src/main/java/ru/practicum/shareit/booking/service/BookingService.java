@@ -91,7 +91,7 @@ public class BookingService {
         if (start == null || end == null || end.isBefore(start) || start.isEqual(end) || start.isBefore(LocalDateTime.now())) {
             throw new ValidationException("Неправильно указано время начала или конца бронирования", HttpStatus.BAD_REQUEST);
         }
-        if(booker.getId() == item.getOwner().getId()){
+        if (booker.getId() == item.getOwner().getId()) {
             //нельзя арендовать у самого себя
             throw new ValidationException("Нельзя арендовать у самого себя", HttpStatus.NOT_FOUND);
 

@@ -12,7 +12,7 @@ public interface ItemService {
 
     ItemDto editItem(Integer itemId, ItemDto itemDto, Integer ownerId);
 
-    ItemDto getItemById(Integer itemId);
+    ItemDtoWithBookings getItemById(Integer itemId, Integer userId);
 
     CommentDto addCommentToItem(CommentDto commentDto);
 

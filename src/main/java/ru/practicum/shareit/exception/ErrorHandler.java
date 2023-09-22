@@ -12,6 +12,7 @@ public class ErrorHandler {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), ex.getStatus());
         return new ResponseEntity<>(errorResponse, ex.getStatus());
     }
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException ex) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), ex.getStatus());

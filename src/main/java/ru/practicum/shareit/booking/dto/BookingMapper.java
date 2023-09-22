@@ -18,7 +18,7 @@ public class BookingMapper {
     private final UserRepository userRepository;
 
     public BookingDto toBookingDto(Booking booking) {
-        return new BookingDto(booking.getId(),booking.getStart(),booking.getEnd(), booking.getItem(), booking.getBooker(), booking.getStatus());
+        return new BookingDto(booking.getId(), booking.getStart(), booking.getEnd(), booking.getItem(), booking.getBooker(), booking.getStatus());
     }
 
     public Booking toBooking(BookingDto booking) {

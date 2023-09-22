@@ -21,8 +21,9 @@ public class User {
     @Email
     private String email;
 
-    public User(){
+    public User() {
     }
+
     public User(String name, String email) {
         this.name = name;
         this.email = email;

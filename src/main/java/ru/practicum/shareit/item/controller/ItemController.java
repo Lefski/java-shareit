@@ -44,8 +44,12 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDtoWithBookings getItemById(@PathVariable int itemId) {
-        return itemService.getItemById(itemId);
+    public ItemDtoWithBookings getItemById(@PathVariable int itemId, @RequestHeader("X-Sharer-User-Id") Integer userId) {
+        if (userId == null) {
+            throw new ValidationException("X-Sharer-User-Id header is missing.", HttpStatus.BAD_REQUEST);
+        }
+
+        return itemService.getItemById(itemId, userId);
 
     }
 

@@ -31,7 +31,7 @@ public class BookingController {
         if (bookerId == null) {
             throw new ValidationException("X-Sharer-User-id header is missing", HttpStatus.BAD_REQUEST);
         }
-        
+
         bookingDto.setBookerId(bookerId);
         return bookingService.addBooking(bookingDto);
     }
