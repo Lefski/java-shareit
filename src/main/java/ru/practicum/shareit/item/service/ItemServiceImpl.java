@@ -77,7 +77,7 @@ public class ItemServiceImpl implements ItemService {
         ItemDtoWithBookings itemDtoWithBookings = ItemMapper.toItemDtoWithBookings(repository.findById(itemId).orElseThrow(() -> new NotFoundException("Item с переданным id не существует", HttpStatus.NOT_FOUND)));
         Item checkItem = repository.findById(itemId).orElseThrow(() -> new NotFoundException("Item с переданным id не существует", HttpStatus.NOT_FOUND));
         if (checkItem.getOwner().getId() == userId) {
-            itemDtoWithBookings = checkItemBookings(itemDtoWithBookings);
+            itemDtoWithBookings = checkItemBookings(itemDtoWithBookings, itemId);
         }
         itemDtoWithBookings.setComments(commentRepository.findAllByItem_Id(itemId));
         return itemDtoWithBookings;
@@ -89,7 +89,7 @@ public class ItemServiceImpl implements ItemService {
         ArrayList<ItemDtoWithBookings> itemDtos = new ArrayList<>();
         for (Item item : itemList) {
             ItemDtoWithBookings itemDtoWithBooking = ItemMapper.toItemDtoWithBookings(item);
-            itemDtoWithBooking = checkItemBookings(itemDtoWithBooking);
+            itemDtoWithBooking = checkItemBookings(itemDtoWithBooking, ownerId);
             itemDtoWithBooking.setComments(commentRepository.findAllByItem_Id(itemDtoWithBooking.getId()));
             itemDtos.add(itemDtoWithBooking);
         }
@@ -101,16 +101,16 @@ public class ItemServiceImpl implements ItemService {
         return itemDtos;
     }
 
-    private ItemDtoWithBookings checkItemBookings(ItemDtoWithBookings itemDtoWithBooking) {
+    private ItemDtoWithBookings checkItemBookings(ItemDtoWithBookings itemDtoWithBooking, int itemId) {
 
-        List<Booking> lastBookingList = bookingRepository.findNearestPastBooking(LocalDateTime.now());
+        List<Booking> lastBookingList = bookingRepository.findNearestPastBooking(LocalDateTime.now(), itemId);
         Booking lastBooking = null;
         if (lastBookingList.size() > 0) {
             lastBooking = lastBookingList.get(0);
             lastBooking.setBookerId(lastBooking.getBooker().getId());
         }
         itemDtoWithBooking.setLastBooking(lastBooking);
-        List<Booking> nextBookingList = bookingRepository.findNearestFutureBooking(LocalDateTime.now());
+        List<Booking> nextBookingList = bookingRepository.findNearestFutureBooking(LocalDateTime.now(), itemId);
         Booking nextBooking = null;
         if (nextBookingList.size() > 0) {
             nextBooking = nextBookingList.get(0);
