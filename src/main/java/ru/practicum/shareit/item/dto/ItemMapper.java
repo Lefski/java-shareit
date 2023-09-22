@@ -13,4 +13,7 @@ public class ItemMapper {
         );
     }
 
+    public static ItemDtoWithBookings toItemDtoWithBookings(Item item) {
+        return new ItemDtoWithBookings(item.getId(), item.getName(), item.getDescription(), item.isAvailable());
+    }
 }

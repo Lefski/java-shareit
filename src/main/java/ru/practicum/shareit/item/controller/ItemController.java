@@ -6,7 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoWithBookings;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.user.model.ErrorResponse;
 
@@ -15,7 +17,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/items")
 public class ItemController {
-
 
     private final ItemServiceImpl itemService;
 
@@ -43,13 +44,13 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@PathVariable int itemId) {
+    public ItemDtoWithBookings getItemById(@PathVariable int itemId) {
         return itemService.getItemById(itemId);
 
     }
 
     @GetMapping
-    public List<ItemDto> getAllItemsByOwner(@RequestHeader("X-Sharer-User-Id") Integer ownerId) {
+    public List<ItemDtoWithBookings> getAllItemsByOwner(@RequestHeader("X-Sharer-User-Id") Integer ownerId) {
         if (ownerId == null) {
             throw new ValidationException("X-Sharer-User-Id header is missing.", HttpStatus.BAD_REQUEST);
         }
@@ -61,15 +62,15 @@ public class ItemController {
         return itemService.searchItems(text);
     }
 
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<ErrorResponse> handleCustomException(ValidationException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), ex.getStatus());
-        return new ResponseEntity<>(errorResponse, ex.getStatus());
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addCommentToItem(@PathVariable int itemId, @RequestBody CommentDto commentDto, @RequestHeader("X-Sharer-User-Id") Integer userId) {
+        if (userId == null) {
+            throw new ValidationException("X-Sharer-User-Id header is missing.", HttpStatus.BAD_REQUEST);
+        }
+        commentDto.setItemId(itemId);
+        commentDto.setAuthorId(userId);
+        return itemService.addCommentToItem(commentDto);
+
     }
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), ex.getStatus());
-        return new ResponseEntity<>(errorResponse, ex.getStatus());
-    }
 }

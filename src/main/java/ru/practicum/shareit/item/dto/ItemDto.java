@@ -1,6 +1,9 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.Data;
+import ru.practicum.shareit.item.model.Comment;
+
+import java.util.List;
 
 @Data
 public class ItemDto {
@@ -9,6 +12,7 @@ public class ItemDto {
     private String description;
     private Boolean available;
     private Integer requestId;
+    private List<Comment> comments;
 
     public ItemDto() {
 

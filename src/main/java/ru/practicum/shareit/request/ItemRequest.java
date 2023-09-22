@@ -19,7 +19,7 @@ public class ItemRequest {
     private String description;
 
     @JoinColumn(name = "requestor_id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @ToString.Exclude
     private User requestor;
 
