@@ -5,7 +5,6 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.time.LocalDateTime;
 
 /**
