@@ -142,8 +142,7 @@ public class BookingService {
     }
 
     public List<BookingDto> getOwnerBookings(String state, int userId) {
-        repository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователя с переданным id не существует", HttpStatus.NOT_FOUND));
-
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователя с переданным id не существует", HttpStatus.NOT_FOUND));
         List<Booking> userBookings;
         switch (state.toUpperCase()) {
             case "CURRENT":

@@ -19,6 +19,8 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -91,6 +93,11 @@ public class ItemServiceImpl implements ItemService {
             itemDtoWithBooking.setComments(commentRepository.findAllByItem_Id(itemDtoWithBooking.getId()));
             itemDtos.add(itemDtoWithBooking);
         }
+        Comparator<ItemDtoWithBookings> idComparator = Comparator.comparingInt(ItemDtoWithBookings::getId);
+
+        // Отсортируем список, из-за каких-то операций в бд элементы расположены не по порядку, возможно неправильно
+        // произвожу транзакции, не понял как откорректировать результат в бд, поэтому сортирую на месте
+        Collections.sort(itemDtos, idComparator);
         return itemDtos;
     }
 
