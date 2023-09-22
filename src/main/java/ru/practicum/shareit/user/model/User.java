@@ -3,7 +3,6 @@ package ru.practicum.shareit.user.model;
 import lombok.Data;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
 
 
 @Entity
@@ -18,7 +17,6 @@ public class User {
     private String name;
 
     @Column(name = "email")
-    @Email
     private String email;
 
     public User() {

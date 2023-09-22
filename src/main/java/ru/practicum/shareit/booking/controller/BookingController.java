@@ -31,9 +31,7 @@ public class BookingController {
         if (bookerId == null) {
             throw new ValidationException("X-Sharer-User-id header is missing", HttpStatus.BAD_REQUEST);
         }
-
-        bookingDto.setBookerId(bookerId);
-        return bookingService.addBooking(bookingDto);
+        return bookingService.addBooking(bookingDto, bookerId);
     }
 
     @PatchMapping("/{bookingId}")
@@ -42,21 +40,7 @@ public class BookingController {
             @RequestParam Boolean approved,
             @RequestHeader("X-Sharer-User-Id") Integer bookerId
     ) {
-        if (bookerId == null) {
-            throw new ValidationException("X-Sharer-User-id header is missing", HttpStatus.BAD_REQUEST);
-        }
-
-        if (bookingService.isBookingOwner(bookingId, bookerId)) {
-            if (approved) {
-                // Если approved=true, подтверждаем бронирование
-                return bookingService.approveBooking(bookingId);
-            } else {
-                // Если approved=false, отклоняем бронирование
-                return bookingService.rejectBooking(bookingId);
-            }
-        } else {
-            throw new ValidationException("У вас нет доступа к данному бронированию", HttpStatus.NOT_FOUND);
-        }
+        return bookingService.approveOrRejectBooking(bookingId, bookerId, approved);
     }
 
     @GetMapping("/{bookingId}")
@@ -79,9 +63,6 @@ public class BookingController {
             @RequestParam(required = false, defaultValue = "ALL") String state,
             @RequestHeader("X-Sharer-User-Id") Integer userId
     ) {
-        if (userId == null) {
-            throw new ValidationException("X-Sharer-User-id header is missing", HttpStatus.BAD_REQUEST);
-        }
         states = List.of("CURRENT", "PAST", "FUTURE", "WAITING", "REJECTED", "ALL");
         if (!states.contains(state)) {
             throw new ValidationException("Unknown state: " + state, HttpStatus.BAD_REQUEST);
@@ -94,9 +75,6 @@ public class BookingController {
             @RequestParam(required = false, defaultValue = "ALL") String state,
             @RequestHeader("X-Sharer-User-Id") Integer userId
     ) {
-        if (userId == null) {
-            throw new ValidationException("X-Sharer-User-id header is missing", HttpStatus.BAD_REQUEST);
-        }
         states = List.of("CURRENT", "PAST", "FUTURE", "WAITING", "REJECTED", "ALL");
         if (!states.contains(state)) {
             throw new ValidationException("Unknown state: " + state, HttpStatus.BAD_REQUEST);

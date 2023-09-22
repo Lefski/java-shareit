@@ -43,10 +43,6 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     public ItemDtoWithBookings getItemById(@PathVariable int itemId, @RequestHeader("X-Sharer-User-Id") Integer userId) {
-        if (userId == null) {
-            throw new ValidationException("X-Sharer-User-Id header is missing.", HttpStatus.BAD_REQUEST);
-        }
-
         return itemService.getItemById(itemId, userId);
 
     }
@@ -66,9 +62,6 @@ public class ItemController {
 
     @PostMapping("/{itemId}/comment")
     public CommentDto addCommentToItem(@PathVariable int itemId, @RequestBody CommentDto commentDto, @RequestHeader("X-Sharer-User-Id") Integer userId) {
-        if (userId == null) {
-            throw new ValidationException("X-Sharer-User-Id header is missing.", HttpStatus.BAD_REQUEST);
-        }
         commentDto.setItemId(itemId);
         commentDto.setAuthorId(userId);
         return itemService.addCommentToItem(commentDto);

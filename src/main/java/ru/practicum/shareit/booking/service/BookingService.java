@@ -40,14 +40,29 @@ public class BookingService {
     private final BookingMapper bookingMapper;
 
 
-    public BookingDto addBooking(BookingDto bookingDto) {
+    public BookingDto addBooking(BookingDto bookingDto, Integer bookerId) {
         log.info("Выполняется запрос на создание бронирования {}", bookingDto.toString());
-        int bookerId = bookingDto.getBookerId();
+        bookingDto.setBookerId(bookerId);
         bookingValidation(bookingDto, bookerId);
         Booking booking = bookingMapper.toBooking(bookingDto);
         Booking savedBooking = repository.save(booking);
         log.debug("Выполнено создание бронирования {}", savedBooking);
         return bookingMapper.toBookingDto(savedBooking);
+    }
+
+    public BookingDto approveOrRejectBooking(Integer bookingId, Integer bookerId, boolean approved) {
+
+        if (isBookingOwner(bookingId, bookerId)) {
+            if (approved) {
+                // Если approved=true, подтверждаем бронирование
+                return approveBooking(bookingId);
+            } else {
+                // Если approved=false, отклоняем бронирование
+                return rejectBooking(bookingId);
+            }
+        } else {
+            throw new ValidationException("У вас нет доступа к данному бронированию", HttpStatus.NOT_FOUND);
+        }
     }
 
     public boolean isBookingOwner(int bookingId, int bookerId) {
