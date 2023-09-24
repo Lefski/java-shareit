@@ -92,11 +92,6 @@ public class BookingService {
     public void bookingValidation(BookingDto bookingDto, Integer bookerId) {
         UserDto booker = userService.getUserById(bookerId);
         Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> new NotFoundException("Item с переданным id не существует", HttpStatus.NOT_FOUND));
-        /*
-        Я решил что нет смысла накручивать дополнительные проверки существования юзера и итема, всё равно я уже написал
-        проверки в соответствующих сервисах, ими и воспользуюсь. Я понимаю, что это создает лишнюю нагрузку,
-        но в проекте слишком маленький объем запросов, чтобы это на что-то повлияло.
-        */
         if (!item.getAvailable()) {
             throw new ValidationException("Вещь недоступна для бронирования", HttpStatus.BAD_REQUEST);
         }

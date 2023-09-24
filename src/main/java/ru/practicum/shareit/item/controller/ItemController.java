@@ -24,11 +24,12 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto addItem(@RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") Integer ownerId) {
-        if (ownerId == null) {
-            throw new ValidationException("X-Sharer-User-Id header is missing.", HttpStatus.BAD_REQUEST);
-        }
-        return itemService.addItem(itemDto, ownerId);
+    public ItemDto addItem(
+            @RequestBody ItemDto itemDto,
+            @RequestHeader("X-Sharer-User-Id") Integer ownerId,
+            @RequestParam(required = false) Integer requestId) {
+
+        return itemService.addItem(itemDto, ownerId, requestId);
 
     }
 

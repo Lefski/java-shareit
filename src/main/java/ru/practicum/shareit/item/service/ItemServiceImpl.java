@@ -13,6 +13,9 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.dto.ItemRequestMapper;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -30,13 +33,14 @@ import java.util.List;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository repository;
     private final UserRepository userRepository;
+    private final ItemRequestRepository itemRequestRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
 
 
     @Override
-    public ItemDto addItem(ItemDto itemDto, Integer ownerId) {
+    public ItemDto addItem(ItemDto itemDto, Integer ownerId, Integer requestId) {
         if (itemDto.getAvailable() == null) {
             throw new ValidationException("Отсутствует статус Available Item", HttpStatus.BAD_REQUEST);
         }
@@ -50,7 +54,12 @@ public class ItemServiceImpl implements ItemService {
         User owner = userRepository.findById(ownerId).orElseThrow(() -> new NotFoundException("Владельца с переданным id не существует", HttpStatus.NOT_FOUND));
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(owner);
-        return ItemMapper.toItemDto(repository.save(item));
+        ItemDto itemDtoWithRequest = ItemMapper.toItemDto(repository.save(item));
+        if (requestId != null) {
+            ItemRequest itemRequest = itemRequestRepository.findById(requestId).orElseThrow(() -> new NotFoundException("Запроса с переданным id не существует", HttpStatus.NOT_FOUND));
+            itemDtoWithRequest.setRequest(ItemRequestMapper.toItemRequestDto(itemRequest));
+        }
+        return itemDtoWithRequest;
     }
 
     @Override

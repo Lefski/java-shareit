@@ -28,9 +28,6 @@ public class BookingController {
 
     @PostMapping
     public BookingDto addBooking(@RequestBody BookingDto bookingDto, @RequestHeader("X-Sharer-User-Id") Integer bookerId) {
-        if (bookerId == null) {
-            throw new ValidationException("X-Sharer-User-id header is missing", HttpStatus.BAD_REQUEST);
-        }
         return bookingService.addBooking(bookingDto, bookerId);
     }
 
