@@ -119,7 +119,7 @@ public class BookingService {
         return bookingMapper.toBookingDto(booking);
     }
 
-    public List<BookingDto> getUserBookings(String state, int userId) {
+    public List<BookingDto> getUserBookings(String state, int userId, int from, int size) {
         repository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователя с переданным id не существует", HttpStatus.NOT_FOUND));
 
         List<Booking> userBookings;
@@ -143,15 +143,31 @@ public class BookingService {
                 userBookings = getAllUserBookings(userId);
                 break;
         }
-        ArrayList<BookingDto> userBookingsDto = new ArrayList<>();
+        List<BookingDto> userBookingsDto = new ArrayList<>();
         for (Booking booking :
                 userBookings) {
             userBookingsDto.add(bookingMapper.toBookingDto(booking));
         }
+        userBookingsDto = paging(from, size, userBookingsDto);
+        //возвращаем страницу
         return userBookingsDto;
     }
 
-    public List<BookingDto> getOwnerBookings(String state, int userId) {
+    private static List<BookingDto> paging(int from, int size, List<BookingDto> userBookingsDto) {
+        List<BookingDto> bookingDtosPage = new ArrayList<>();
+        if (size !=0 && from < userBookingsDto.size() ) {
+            int i = from;
+            int sizeCounter = 0;
+            while (i < userBookingsDto.size() && sizeCounter < size){
+                bookingDtosPage.add(userBookingsDto.get(i));
+                i++;
+                sizeCounter++;
+            }
+        }
+        return bookingDtosPage;
+    }
+
+    public List<BookingDto> getOwnerBookings(String state, int userId, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователя с переданным id не существует", HttpStatus.NOT_FOUND));
         List<Booking> userBookings;
         switch (state.toUpperCase()) {
@@ -174,11 +190,13 @@ public class BookingService {
                 userBookings = getAllOwnerBookings(userId);
                 break;
         }
-        ArrayList<BookingDto> userBookingsDto = new ArrayList<>();
+        List<BookingDto> userBookingsDto = new ArrayList<>();
         for (Booking booking :
                 userBookings) {
             userBookingsDto.add(bookingMapper.toBookingDto(booking));
         }
+        userBookingsDto = paging(from, size, userBookingsDto);
+        //возвращаем страницу
         return userBookingsDto;
     }
 

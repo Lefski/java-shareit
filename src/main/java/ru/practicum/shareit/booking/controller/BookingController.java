@@ -58,25 +58,35 @@ public class BookingController {
     @GetMapping("/owner")
     public List<BookingDto> getOwnerBookings(
             @RequestParam(required = false, defaultValue = "ALL") String state,
+            @RequestParam(required = false, defaultValue = "0") Integer from,
+            @RequestParam(required = false, defaultValue = "20") Integer size,
             @RequestHeader("X-Sharer-User-Id") Integer userId
     ) {
         states = List.of("CURRENT", "PAST", "FUTURE", "WAITING", "REJECTED", "ALL");
         if (!states.contains(state)) {
             throw new ValidationException("Unknown state: " + state, HttpStatus.BAD_REQUEST);
         }
-        return bookingService.getOwnerBookings(state, userId);
+        if(from < 0 || size <= 0){
+            throw new ValidationException("Передан некорректный параметр для пагинации", HttpStatus.BAD_REQUEST);
+        }
+        return bookingService.getOwnerBookings(state, userId, from, size);
     }
 
     @GetMapping
     public List<BookingDto> getUserBookings(
             @RequestParam(required = false, defaultValue = "ALL") String state,
+            @RequestParam(required = false, defaultValue = "0") Integer from,
+            @RequestParam(required = false, defaultValue = "20") Integer size,
             @RequestHeader("X-Sharer-User-Id") Integer userId
     ) {
         states = List.of("CURRENT", "PAST", "FUTURE", "WAITING", "REJECTED", "ALL");
         if (!states.contains(state)) {
             throw new ValidationException("Unknown state: " + state, HttpStatus.BAD_REQUEST);
         }
-        return bookingService.getUserBookings(state, userId);
+        if(from < 0 || size <= 0){
+            throw new ValidationException("Передан некорректный параметр для пагинации", HttpStatus.BAD_REQUEST);
+        }
+        return bookingService.getUserBookings(state, userId, from, size);
     }
 
 
