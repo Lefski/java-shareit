@@ -26,10 +26,9 @@ public class ItemController {
     @PostMapping
     public ItemDto addItem(
             @RequestBody ItemDto itemDto,
-            @RequestHeader("X-Sharer-User-Id") Integer ownerId,
-            @RequestParam(required = false) Integer requestId) {
+            @RequestHeader("X-Sharer-User-Id") Integer ownerId) {
 
-        return itemService.addItem(itemDto, ownerId, requestId);
+        return itemService.addItem(itemDto, ownerId);
 
     }
 

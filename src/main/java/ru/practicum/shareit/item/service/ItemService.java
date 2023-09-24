@@ -7,7 +7,7 @@ import ru.practicum.shareit.item.dto.ItemDtoWithBookings;
 import java.util.List;
 
 public interface ItemService {
-    ItemDto addItem(ItemDto itemDto, Integer ownerId, Integer requestId);
+    ItemDto addItem(ItemDto itemDto, Integer ownerId);
 
     ItemDto editItem(Integer itemId, ItemDto itemDto, Integer ownerId);
 

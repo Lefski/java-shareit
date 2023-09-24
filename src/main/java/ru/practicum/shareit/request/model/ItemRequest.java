@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Data
 public class ItemRequest {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "description")
@@ -30,5 +30,9 @@ public class ItemRequest {
         this.description = description;
         this.created = created;
         this.requestor = requestor;
+    }
+
+    public ItemRequest() {
+
     }
 }

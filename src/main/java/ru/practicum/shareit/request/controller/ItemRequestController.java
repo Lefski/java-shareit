@@ -1,7 +1,9 @@
 package ru.practicum.shareit.request.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -20,9 +22,14 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(path = "/requests")
-@RequiredArgsConstructor
 public class ItemRequestController {
+
     ItemRequestService itemRequestService;
+
+    @Autowired
+    public ItemRequestController(ItemRequestService itemRequestService) {
+        this.itemRequestService = itemRequestService;
+    }
 
     @PostMapping
     public ItemRequestDto addItemRequest(@RequestBody ItemRequestDto itemRequestDto,
@@ -43,11 +50,14 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    public Page<ItemRequestDto> getAllItemRequests(
+    public List<ItemRequestDto> getAllItemRequests(
             @RequestHeader("X-Sharer-User-Id") Integer userId,
-            @RequestParam(required = false, defaultValue = "0") @Min(0) Integer from,
-            @RequestParam(required = false, defaultValue = "20") @Min(0) @Max(100) Integer size
+            @RequestParam(required = false, defaultValue = "0") Integer from,
+            @RequestParam(required = false, defaultValue = "20") Integer size
     ) {
+        if(from < 0 || size < 0){
+            throw new ValidationException("Передан некорректный параметр для пагинации", HttpStatus.BAD_REQUEST);
+        }
         Integer offset = from / size;
         //я не понял как можно получать page начиная с конкретного элемента, поэтому получаю элементы начиная со
         //страницы, на которой содержится первый элемент поиска
@@ -58,9 +68,8 @@ public class ItemRequestController {
     @GetMapping("/{requestId}")
     public ItemRequestDto getRequest(
             @RequestHeader("X-Sharer-User-Id") Integer userId,
-            @RequestParam() Integer requestId
-    ) {
-        return itemRequestService.getRequestById(requestId);
+            @PathVariable Integer requestId) {
+        return itemRequestService.getRequestById(requestId, userId);
     }
 
     @ExceptionHandler(ValidationException.class)

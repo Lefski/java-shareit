@@ -42,7 +42,7 @@ public class ItemRequestService {
     public ItemRequestDto createItemRequest(ItemRequestDto itemRequestDto, Integer userId) {
         log.info("Создается запрос на предмет {}", itemRequestDto.toString());
         itemRequestValidation(itemRequestDto, userId);
-        User requestor = UserMapper.toUser(userService.getUserById(userId));
+        User requestor = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с переданным id не существует", HttpStatus.NOT_FOUND));
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto, requestor);
         ItemRequestDto savedItemRequest = ItemRequestMapper.toItemRequestDto(repository.save(itemRequest));
         log.debug("Создан запрос на предмет {}", savedItemRequest);
@@ -68,30 +68,38 @@ public class ItemRequestService {
         List<ItemDto> itemDtoList = new ArrayList<>();
         for (Item item :
                 itemList) {
-            itemDtoList.add(ItemMapper.toItemDto(item));
+            ItemDto itemDto = ItemMapper.toItemDto(item);
+            itemDto.setRequestId(itemRequestDto.getId());
+            itemDtoList.add(itemDto);
             //получается неэффективно с этими переборами для перевода в дто, но я не придумал более оптимальный способ
         }
         itemRequestDto.setItems(itemDtoList);
         return itemRequestDto;
     }
 
-    public Page<ItemRequestDto> getAllItemRequests(Integer userId, Integer offset, Integer pageSize) {
+    public List<ItemRequestDto> getAllItemRequests(Integer userId, Integer offset, Integer pageSize) {
 
 
-        Page<ItemRequest> itemRequestPage = repository.findAll(PageRequest.of(offset, pageSize, Sort.Direction.DESC));
-        Page<ItemRequestDto> itemRequestDtos = itemRequestPage.map(new Function<ItemRequest, ItemRequestDto>() {
-            @Override
-            public ItemRequestDto apply(ItemRequest itemRequest) {
-                //я не очень хорошо понимаю как сделать лямбда-функцию, поэтому выбрал такое решение
-                return ItemRequestMapper.toItemRequestDto(itemRequest);
+        Page<ItemRequest> itemRequestPage = repository.findAll(PageRequest.of(offset, pageSize, Sort.Direction.DESC, "created"));
+
+        Page<ItemRequestDto> itemRequestDtos = itemRequestPage.map(ItemRequestMapper::toItemRequestDto);
+        //я решил попробовать пагинацию делать через page, но в тестах нужен именно список
+        List<ItemRequestDto> itemRequestDtoList = itemRequestDtos.getContent();
+        List<ItemRequestDto> itemRequestDtosWithItemsList = new ArrayList<>();
+        for (ItemRequestDto itemRequestDto :
+                itemRequestDtoList) {
+            //TODO: add if for request owner
+            if (itemRequestDto.getRequestor().getId() != userId){
+                itemRequestDto = findRequestItems(itemRequestDto);
+                itemRequestDtosWithItemsList.add(itemRequestDto);
             }
-        });
 
-
-        return itemRequestDtos;
+        }
+        return itemRequestDtosWithItemsList;
     }
 
-    public ItemRequestDto getRequestById(Integer requestId) {
+    public ItemRequestDto getRequestById(Integer requestId, Integer userId) {
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с переданным id не существует", HttpStatus.NOT_FOUND));
         ItemRequest itemRequest = repository.findById(requestId).orElseThrow(() -> new NotFoundException("Запроса с переданным id не существует", HttpStatus.NOT_FOUND));
         ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
         itemRequestDto = findRequestItems(itemRequestDto);

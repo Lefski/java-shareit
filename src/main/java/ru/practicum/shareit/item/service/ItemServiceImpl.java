@@ -13,7 +13,6 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
@@ -40,7 +39,7 @@ public class ItemServiceImpl implements ItemService {
 
 
     @Override
-    public ItemDto addItem(ItemDto itemDto, Integer ownerId, Integer requestId) {
+    public ItemDto addItem(ItemDto itemDto, Integer ownerId) {
         if (itemDto.getAvailable() == null) {
             throw new ValidationException("Отсутствует статус Available Item", HttpStatus.BAD_REQUEST);
         }
@@ -50,16 +49,23 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getDescription() == null || itemDto.getDescription().isBlank()) {
             throw new ValidationException("Некорректное описание Item", HttpStatus.BAD_REQUEST);
         }
-
+        Integer requestId = null;
+        if (itemDto.getRequestId() != null) {
+            requestId = itemDto.getRequestId();
+        }
         User owner = userRepository.findById(ownerId).orElseThrow(() -> new NotFoundException("Владельца с переданным id не существует", HttpStatus.NOT_FOUND));
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(owner);
-        ItemDto itemDtoWithRequest = ItemMapper.toItemDto(repository.save(item));
         if (requestId != null) {
             ItemRequest itemRequest = itemRequestRepository.findById(requestId).orElseThrow(() -> new NotFoundException("Запроса с переданным id не существует", HttpStatus.NOT_FOUND));
-            itemDtoWithRequest.setRequest(ItemRequestMapper.toItemRequestDto(itemRequest));
+            item.setRequest(itemRequest);
+            ItemDto itemDtoWithRequest = ItemMapper.toItemDto(repository.save(item));
+            itemDtoWithRequest.setRequestId(itemRequest.getId());
+            return itemDtoWithRequest;
+        } else {
+            return ItemMapper.toItemDto(repository.save(item));
         }
-        return itemDtoWithRequest;
+
     }
 
     @Override
