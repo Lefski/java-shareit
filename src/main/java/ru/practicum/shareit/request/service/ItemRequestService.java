@@ -17,7 +17,6 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
-import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.UserService;
@@ -25,7 +24,6 @@ import ru.practicum.shareit.user.service.UserService;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 @Service
 @Slf4j
@@ -89,7 +87,7 @@ public class ItemRequestService {
         for (ItemRequestDto itemRequestDto :
                 itemRequestDtoList) {
             //TODO: add if for request owner
-            if (itemRequestDto.getRequestor().getId() != userId){
+            if (itemRequestDto.getRequestor().getId() != userId) {
                 itemRequestDto = findRequestItems(itemRequestDto);
                 itemRequestDtosWithItemsList.add(itemRequestDto);
             }

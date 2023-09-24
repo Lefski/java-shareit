@@ -66,7 +66,7 @@ public class BookingController {
         if (!states.contains(state)) {
             throw new ValidationException("Unknown state: " + state, HttpStatus.BAD_REQUEST);
         }
-        if(from < 0 || size <= 0){
+        if (from < 0 || size <= 0) {
             throw new ValidationException("Передан некорректный параметр для пагинации", HttpStatus.BAD_REQUEST);
         }
         return bookingService.getOwnerBookings(state, userId, from, size);
@@ -83,7 +83,7 @@ public class BookingController {
         if (!states.contains(state)) {
             throw new ValidationException("Unknown state: " + state, HttpStatus.BAD_REQUEST);
         }
-        if(from < 0 || size <= 0){
+        if (from < 0 || size <= 0) {
             throw new ValidationException("Передан некорректный параметр для пагинации", HttpStatus.BAD_REQUEST);
         }
         return bookingService.getUserBookings(state, userId, from, size);

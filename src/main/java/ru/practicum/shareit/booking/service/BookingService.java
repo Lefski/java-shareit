@@ -155,10 +155,10 @@ public class BookingService {
 
     private static List<BookingDto> paging(int from, int size, List<BookingDto> userBookingsDto) {
         List<BookingDto> bookingDtosPage = new ArrayList<>();
-        if (size !=0 && from < userBookingsDto.size() ) {
+        if (size != 0 && from < userBookingsDto.size()) {
             int i = from;
             int sizeCounter = 0;
-            while (i < userBookingsDto.size() && sizeCounter < size){
+            while (i < userBookingsDto.size() && sizeCounter < size) {
                 bookingDtosPage.add(userBookingsDto.get(i));
                 i++;
                 sizeCounter++;
