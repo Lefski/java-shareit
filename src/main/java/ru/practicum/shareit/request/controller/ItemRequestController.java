@@ -13,9 +13,6 @@ import ru.practicum.shareit.user.model.ErrorResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * TODO Sprint add-item-requests.
- */
 @RestController
 @RequestMapping(path = "/requests")
 public class ItemRequestController {
