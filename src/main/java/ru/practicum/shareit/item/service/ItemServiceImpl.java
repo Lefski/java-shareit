@@ -106,9 +106,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoWithBookings> getAllItemsByOwner(Integer ownerId) {
+    public List<ItemDtoWithBookings> getAllItemsByOwner(Integer ownerId, Integer from, Integer size) {
         List<Item> itemList = repository.findByOwnerId(ownerId);
-        ArrayList<ItemDtoWithBookings> itemDtos = new ArrayList<>();
+        List<ItemDtoWithBookings> itemDtos = new ArrayList<>();
         for (Item item : itemList) {
             ItemDtoWithBookings itemDtoWithBooking = ItemMapper.toItemDtoWithBookings(item);
             itemDtoWithBooking = checkItemBookings(itemDtoWithBooking, item.getId());
@@ -127,7 +127,36 @@ public class ItemServiceImpl implements ItemService {
         // Отсортируем список, из-за каких-то операций в бд элементы расположены не по порядку, возможно неправильно
         // произвожу транзакции, не понял как откорректировать результат в бд, поэтому сортирую на месте
         Collections.sort(itemDtos, idComparator);
+        itemDtos = paging(from, size, itemDtos);
         return itemDtos;
+    }
+
+    private static List<ItemDtoWithBookings> paging(int from, int size, List<ItemDtoWithBookings> itemDtoWithBookingsList) {
+        List<ItemDtoWithBookings> bookingDtosPage = new ArrayList<>();
+        if (size != 0 && from < itemDtoWithBookingsList.size()) {
+            int i = from;
+            int sizeCounter = 0;
+            while (i < itemDtoWithBookingsList.size() && sizeCounter < size) {
+                bookingDtosPage.add(itemDtoWithBookingsList.get(i));
+                i++;
+                sizeCounter++;
+            }
+        }
+        return bookingDtosPage;
+    }
+
+    private static List<ItemDto> pagingForSearch(int from, int size, List<ItemDto> itemDtoList) {
+        List<ItemDto> bookingDtosPage = new ArrayList<>();
+        if (size != 0 && from < itemDtoList.size()) {
+            int i = from;
+            int sizeCounter = 0;
+            while (i < itemDtoList.size() && sizeCounter < size) {
+                bookingDtosPage.add(itemDtoList.get(i));
+                i++;
+                sizeCounter++;
+            }
+        }
+        return bookingDtosPage;
     }
 
     private ItemDtoWithBookings checkItemBookings(ItemDtoWithBookings itemDtoWithBooking, int itemId) {
@@ -183,6 +212,20 @@ public class ItemServiceImpl implements ItemService {
         for (Item item : itemList) {
             itemDtos.add(ItemMapper.toItemDto(item));
         }
+        return itemDtos;
+    }
+
+    @Override
+    public List<ItemDto> searchItems(String text, Integer from, Integer size) {
+        if (text.isBlank() || text.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Item> itemList = repository.search(text);
+        List<ItemDto> itemDtos = new ArrayList<>();
+        for (Item item : itemList) {
+            itemDtos.add(ItemMapper.toItemDto(item));
+        }
+        itemDtos = pagingForSearch(from, size, itemDtos);
         return itemDtos;
     }
 }

@@ -48,16 +48,29 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDtoWithBookings> getAllItemsByOwner(@RequestHeader("X-Sharer-User-Id") Integer ownerId) {
+    public List<ItemDtoWithBookings> getAllItemsByOwner(
+            @RequestParam(required = false, defaultValue = "0") Integer from,
+            @RequestParam(required = false, defaultValue = "20") Integer size,
+            @RequestHeader("X-Sharer-User-Id") Integer ownerId) {
         if (ownerId == null) {
             throw new ValidationException("X-Sharer-User-Id header is missing.", HttpStatus.BAD_REQUEST);
         }
-        return itemService.getAllItemsByOwner(ownerId);
+        if (from < 0 || size <= 0) {
+            throw new ValidationException("Передан некорректный параметр для пагинации", HttpStatus.BAD_REQUEST);
+        }
+        return itemService.getAllItemsByOwner(ownerId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItems(@RequestParam String text) {
-        return itemService.searchItems(text);
+    public List<ItemDto> searchItems(
+            @RequestParam(required = false, defaultValue = "0") Integer from,
+            @RequestParam(required = false, defaultValue = "20") Integer size,
+            @RequestParam String text) {
+        if (from < 0 || size <= 0) {
+            throw new ValidationException("Передан некорректный параметр для пагинации", HttpStatus.BAD_REQUEST);
+        }
+
+        return itemService.searchItems(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
