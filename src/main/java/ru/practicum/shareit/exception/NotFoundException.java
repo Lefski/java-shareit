@@ -5,12 +5,12 @@ import org.springframework.http.HttpStatus;
 public class NotFoundException extends RuntimeException {
     private HttpStatus status;
 
-    public NotFoundException(String message) {
-        super(message);
+    public NotFoundException(String error) {
+        super(error);
     }
 
-    public NotFoundException(String message, HttpStatus status) {
-        super(message);
+    public NotFoundException(String error, HttpStatus status) {
+        super(error);
         this.status = status;
     }
 

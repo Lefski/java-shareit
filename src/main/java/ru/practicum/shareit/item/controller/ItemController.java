@@ -2,14 +2,13 @@ package ru.practicum.shareit.item.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.dto.ItemDtoWithBookings;
+import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
-import ru.practicum.shareit.user.model.ErrorResponse;
 
 import java.util.List;
 
@@ -17,8 +16,7 @@ import java.util.List;
 @RequestMapping("/items")
 public class ItemController {
 
-
-    private final ItemServiceImpl itemService;
+    private final ItemService itemService;
 
     @Autowired
     public ItemController(ItemServiceImpl itemService) {
@@ -26,20 +24,16 @@ public class ItemController {
     }
 
     @PostMapping
-    public Item addItem(@RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") Integer ownerId) {
+    public ItemDto addItem(@RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") Integer ownerId) {
         if (ownerId == null) {
             throw new ValidationException("X-Sharer-User-Id header is missing.", HttpStatus.BAD_REQUEST);
         }
         return itemService.addItem(itemDto, ownerId);
-        /*
-        Здравствуйте, уважаемый проверяющий, я понял ваш комментарий про то что в контроллерах лучше возвращать dto,
-        но неудобно сейчас будет всю цепочку вызовов переделывать под возврат dto. Время поджимает и хотелось бы уже
-        делать следующий спринт, поэтому, надеюсь, вы мне простите что я учел, но не исправил ваши комментарии
-         */
+
     }
 
     @PatchMapping("/{itemId}")
-    public Item editItem(@PathVariable int itemId, @RequestBody ItemDto item, @RequestHeader("X-Sharer-User-Id") Integer ownerId) {
+    public ItemDto editItem(@PathVariable int itemId, @RequestBody ItemDto item, @RequestHeader("X-Sharer-User-Id") Integer ownerId) {
         if (ownerId == null) {
             throw new ValidationException("X-Sharer-User-Id header is missing.", HttpStatus.BAD_REQUEST);
         }
@@ -48,13 +42,13 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public Item getItemById(@PathVariable int itemId) {
-        return itemService.getItemById(itemId);
+    public ItemDtoWithBookings getItemById(@PathVariable int itemId, @RequestHeader("X-Sharer-User-Id") Integer userId) {
+        return itemService.getItemById(itemId, userId);
 
     }
 
     @GetMapping
-    public List<Item> getAllItemsByOwner(@RequestHeader("X-Sharer-User-Id") Integer ownerId) {
+    public List<ItemDtoWithBookings> getAllItemsByOwner(@RequestHeader("X-Sharer-User-Id") Integer ownerId) {
         if (ownerId == null) {
             throw new ValidationException("X-Sharer-User-Id header is missing.", HttpStatus.BAD_REQUEST);
         }
@@ -62,19 +56,16 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<Item> searchItems(@RequestParam String text) {
+    public List<ItemDto> searchItems(@RequestParam String text) {
         return itemService.searchItems(text);
     }
 
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<ErrorResponse> handleCustomException(ValidationException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), ex.getStatus());
-        return new ResponseEntity<>(errorResponse, ex.getStatus());
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addCommentToItem(@PathVariable int itemId, @RequestBody CommentDto commentDto, @RequestHeader("X-Sharer-User-Id") Integer userId) {
+        commentDto.setItemId(itemId);
+        commentDto.setAuthorId(userId);
+        return itemService.addCommentToItem(commentDto);
+
     }
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), ex.getStatus());
-        return new ResponseEntity<>(errorResponse, ex.getStatus());
-    }
 }

@@ -4,7 +4,7 @@ import ru.practicum.shareit.item.model.Item;
 
 public class ItemMapper {
     public static ItemDto toItemDto(Item item) {
-        return new ItemDto(item.getName(), item.getDescription(), item.isAvailable(), item.getRequest() != null ? item.getRequest().getId() : null);
+        return new ItemDto(item.getId(), item.getName(), item.getDescription(), item.isAvailable());
     }
 
     public static Item toItem(ItemDto itemDto) {
@@ -13,4 +13,7 @@ public class ItemMapper {
         );
     }
 
+    public static ItemDtoWithBookings toItemDtoWithBookings(Item item) {
+        return new ItemDtoWithBookings(item.getId(), item.getName(), item.getDescription(), item.isAvailable());
+    }
 }
