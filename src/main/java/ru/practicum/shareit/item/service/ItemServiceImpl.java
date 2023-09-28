@@ -37,6 +37,33 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
 
+    private static List<ItemDtoWithBookings> paging(int from, int size, List<ItemDtoWithBookings> itemDtoWithBookingsList) {
+        List<ItemDtoWithBookings> bookingDtosPage = new ArrayList<>();
+        if (size != 0 && from < itemDtoWithBookingsList.size()) {
+            int i = from;
+            int sizeCounter = 0;
+            while (i < itemDtoWithBookingsList.size() && sizeCounter < size) {
+                bookingDtosPage.add(itemDtoWithBookingsList.get(i));
+                i++;
+                sizeCounter++;
+            }
+        }
+        return bookingDtosPage;
+    }
+
+    private static List<ItemDto> pagingForSearch(int from, int size, List<ItemDto> itemDtoList) {
+        List<ItemDto> bookingDtosPage = new ArrayList<>();
+        if (size != 0 && from < itemDtoList.size()) {
+            int i = from;
+            int sizeCounter = 0;
+            while (i < itemDtoList.size() && sizeCounter < size) {
+                bookingDtosPage.add(itemDtoList.get(i));
+                i++;
+                sizeCounter++;
+            }
+        }
+        return bookingDtosPage;
+    }
 
     @Override
     public ItemDto addItem(ItemDto itemDto, Integer ownerId) {
@@ -129,34 +156,6 @@ public class ItemServiceImpl implements ItemService {
         Collections.sort(itemDtos, idComparator);
         itemDtos = paging(from, size, itemDtos);
         return itemDtos;
-    }
-
-    private static List<ItemDtoWithBookings> paging(int from, int size, List<ItemDtoWithBookings> itemDtoWithBookingsList) {
-        List<ItemDtoWithBookings> bookingDtosPage = new ArrayList<>();
-        if (size != 0 && from < itemDtoWithBookingsList.size()) {
-            int i = from;
-            int sizeCounter = 0;
-            while (i < itemDtoWithBookingsList.size() && sizeCounter < size) {
-                bookingDtosPage.add(itemDtoWithBookingsList.get(i));
-                i++;
-                sizeCounter++;
-            }
-        }
-        return bookingDtosPage;
-    }
-
-    private static List<ItemDto> pagingForSearch(int from, int size, List<ItemDto> itemDtoList) {
-        List<ItemDto> bookingDtosPage = new ArrayList<>();
-        if (size != 0 && from < itemDtoList.size()) {
-            int i = from;
-            int sizeCounter = 0;
-            while (i < itemDtoList.size() && sizeCounter < size) {
-                bookingDtosPage.add(itemDtoList.get(i));
-                i++;
-                sizeCounter++;
-            }
-        }
-        return bookingDtosPage;
     }
 
     private ItemDtoWithBookings checkItemBookings(ItemDtoWithBookings itemDtoWithBooking, int itemId) {

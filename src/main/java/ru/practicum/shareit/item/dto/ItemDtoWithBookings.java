@@ -24,4 +24,11 @@ public class ItemDtoWithBookings {
         this.available = available;
     }
 
+    public ItemDtoWithBookings(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public ItemDtoWithBookings() {
+    }
 }

@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/items")
 public class ItemController {
 
-    private final ItemService itemService;
+    ItemService itemService;
 
     @Autowired
     public ItemController(ItemServiceImpl itemService) {
@@ -29,7 +29,6 @@ public class ItemController {
             @RequestHeader("X-Sharer-User-Id") Integer ownerId) {
 
         return itemService.addItem(itemDto, ownerId);
-
     }
 
     @PatchMapping("/{itemId}")

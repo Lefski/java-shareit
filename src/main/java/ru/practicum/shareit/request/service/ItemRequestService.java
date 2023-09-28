@@ -86,7 +86,6 @@ public class ItemRequestService {
         List<ItemRequestDto> itemRequestDtosWithItemsList = new ArrayList<>();
         for (ItemRequestDto itemRequestDto :
                 itemRequestDtoList) {
-            //TODO: add if for request owner
             if (itemRequestDto.getRequestor().getId() != userId) {
                 itemRequestDto = findRequestItems(itemRequestDto);
                 itemRequestDtosWithItemsList.add(itemRequestDto);

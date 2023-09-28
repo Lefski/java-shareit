@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.ErrorResponse;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -24,7 +23,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto createUser(@RequestBody UserDto user) {
 
-        return userService.createUser(UserMapper.toUser(user));
+        return userService.createUser(user);
     }
 
     @GetMapping
@@ -39,7 +38,7 @@ public class UserController {
 
     @PatchMapping("/{id}")
     public UserDto updateUser(@PathVariable Integer id, @RequestBody UserDto updatedUser) {
-        return userService.updateUser(id, UserMapper.toUser(updatedUser));
+        return userService.updateUser(id, updatedUser);
     }
 
     @DeleteMapping("/{id}")

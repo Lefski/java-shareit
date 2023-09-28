@@ -39,6 +39,19 @@ public class BookingService {
     private final ItemServiceImpl itemService;
     private final BookingMapper bookingMapper;
 
+    private static List<BookingDto> paging(int from, int size, List<BookingDto> userBookingsDto) {
+        List<BookingDto> bookingDtosPage = new ArrayList<>();
+        if (size != 0 && from < userBookingsDto.size()) {
+            int i = from;
+            int sizeCounter = 0;
+            while (i < userBookingsDto.size() && sizeCounter < size) {
+                bookingDtosPage.add(userBookingsDto.get(i));
+                i++;
+                sizeCounter++;
+            }
+        }
+        return bookingDtosPage;
+    }
 
     public BookingDto addBooking(BookingDto bookingDto, Integer bookerId) {
         log.info("Выполняется запрос на создание бронирования {}", bookingDto.toString());
@@ -108,7 +121,6 @@ public class BookingService {
 
     }
 
-
     public boolean isBooker(Integer bookingId, Integer userId) {
         Booking booking = repository.findById(bookingId).orElseThrow(() -> new ValidationException("Бронирования с переданным id не существует", HttpStatus.BAD_REQUEST));
         return booking.getBooker().getId() == userId;
@@ -151,20 +163,6 @@ public class BookingService {
         userBookingsDto = paging(from, size, userBookingsDto);
         //возвращаем страницу
         return userBookingsDto;
-    }
-
-    private static List<BookingDto> paging(int from, int size, List<BookingDto> userBookingsDto) {
-        List<BookingDto> bookingDtosPage = new ArrayList<>();
-        if (size != 0 && from < userBookingsDto.size()) {
-            int i = from;
-            int sizeCounter = 0;
-            while (i < userBookingsDto.size() && sizeCounter < size) {
-                bookingDtosPage.add(userBookingsDto.get(i));
-                i++;
-                sizeCounter++;
-            }
-        }
-        return bookingDtosPage;
     }
 
     public List<BookingDto> getOwnerBookings(String state, int userId, int from, int size) {
