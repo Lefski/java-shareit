@@ -7,17 +7,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -79,7 +83,6 @@ public class BookingControllerTest {
         when(bookingService.approveOrRejectBooking(any(Integer.class), any(Integer.class), any(Boolean.class)))
                 .thenReturn(bookingDto);
 
-        // Выполняем PATCH запрос, используя параметры из bookingDto
         mvc.perform(patch("/bookings/{bookingId}", bookingDto.getId())
                         .param("approved", Boolean.toString(true))
                         .characterEncoding("UTF-8")
@@ -134,6 +137,28 @@ public class BookingControllerTest {
                         .header("X-Sharer-User-Id", bookingDto.getBooker().getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(Collections.singletonList(bookingDto))));
+    }
+
+    @Test
+    void testHandleValidationException() throws Exception {
+        ValidationException validationException = new ValidationException("Validation Error", HttpStatus.BAD_REQUEST);
+        when(bookingService.addBooking(any(BookingDto.class), any(Integer.class)))
+                .thenThrow(validationException);
+
+        BookingDto bookingDto = new BookingDto();
+
+        String bookingDtoJson = mapper.writeValueAsString(bookingDto);
+
+        MockHttpServletResponse response = mvc.perform(post("/bookings")
+                        .content(bookingDtoJson)
+                        .characterEncoding("UTF-8")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 1))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse();
+
+        String responseBody = response.getContentAsString();
+        assertTrue(responseBody.contains("Validation Error"));
     }
 
 

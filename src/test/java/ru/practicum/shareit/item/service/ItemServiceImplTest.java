@@ -136,10 +136,8 @@ class ItemServiceImplTest {
         item.setId(itemId);
         item.setOwner(owner);
 
-        // Устанавливаем поведение для заглушек
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 
-        // Вызываем метод и проверяем результат
         ItemDtoWithBookings resultItemDto = itemService.getItemById(itemId, userId);
 
         assertNotNull(resultItemDto);
@@ -182,14 +180,12 @@ class ItemServiceImplTest {
         itemList.add(item2);
         itemList.add(item1);
 
-        // Устанавливаем поведение для заглушек
         when(itemRepository.findByOwnerId(ownerId)).thenReturn(itemList);
         when(bookingRepository.findNearestPastBooking(1)).thenReturn(Collections.singletonList(pastBooking));
         when(bookingRepository.findNearestFutureBooking(1)).thenReturn(Collections.singletonList(nextBooking));
         when(bookingRepository.findNearestPastBooking(2)).thenReturn(Collections.singletonList(pastBooking));
         when(bookingRepository.findNearestFutureBooking(2)).thenReturn(Collections.singletonList(nextBooking));
 
-        // Вызываем метод и проверяем результат
         List<ItemDtoWithBookings> resultItemList = itemService.getAllItemsByOwner(ownerId, from, size);
 
         assertNotNull(resultItemList);

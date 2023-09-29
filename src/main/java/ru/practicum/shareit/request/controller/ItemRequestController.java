@@ -52,8 +52,6 @@ public class ItemRequestController {
             throw new ValidationException("Передан некорректный параметр для пагинации", HttpStatus.BAD_REQUEST);
         }
         Integer offset = from / size;
-        //я не понял как можно получать page начиная с конкретного элемента, поэтому получаю элементы начиная со
-        //страницы, на которой содержится первый элемент поиска
 
         return itemRequestService.getAllItemRequests(userId, offset, size);
     }

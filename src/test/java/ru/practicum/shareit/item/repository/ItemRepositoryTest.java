@@ -68,7 +68,6 @@ public class ItemRepositoryTest {
         assertNotNull(searchResults);
         assertEquals(2, searchResults.size());
 
-        // Проверяем, что найденные предметы содержат текст "Test"
         for (Item item : searchResults) {
             assertTrue(item.getName().contains("Test") || item.getDescription().contains("Test"));
         }

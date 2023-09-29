@@ -2,18 +2,22 @@ package ru.practicum.shareit.item.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithBookings;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
+import ru.practicum.shareit.user.model.ErrorResponse;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/items")
+
 public class ItemController {
 
     ItemService itemService;
@@ -27,7 +31,7 @@ public class ItemController {
     public ItemDto addItem(
             @RequestBody ItemDto itemDto,
             @RequestHeader("X-Sharer-User-Id") Integer ownerId) {
-
+        ItemDto itemDto1 = itemService.addItem(itemDto, ownerId);
         return itemService.addItem(itemDto, ownerId);
     }
 
@@ -78,6 +82,18 @@ public class ItemController {
         commentDto.setAuthorId(userId);
         return itemService.addCommentToItem(commentDto);
 
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorResponse> handleCustomException(ValidationException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), ex.getStatus());
+        return new ResponseEntity<>(errorResponse, ex.getStatus());
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), ex.getStatus());
+        return new ResponseEntity<>(errorResponse, ex.getStatus());
     }
 
 }

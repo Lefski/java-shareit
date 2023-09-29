@@ -45,9 +45,6 @@ public class BookingController {
             @PathVariable Integer bookingId,
             @RequestHeader("X-Sharer-User-Id") Integer bookerId
     ) {
-        if (bookerId == null) {
-            throw new ValidationException("X-Sharer-User-id header is missing", HttpStatus.BAD_REQUEST);
-        }
         if (bookingService.isBookingOwner(bookingId, bookerId) || bookingService.isBooker(bookingId, bookerId)) {
             return bookingService.getBookingById(bookingId);
         } else {

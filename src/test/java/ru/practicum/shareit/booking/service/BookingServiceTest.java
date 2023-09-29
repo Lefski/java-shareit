@@ -202,7 +202,7 @@ class BookingServiceTest {
 
         Item item = new Item();
         User owner = new User();
-        owner.setId(2); // Not the same as bookerId
+        owner.setId(2);
         item.setOwner(owner);
         booking.setItem(item);
 

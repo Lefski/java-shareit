@@ -60,6 +60,7 @@ public class ItemControllerTest {
 
         when(itemService.addItem(any(ItemDto.class), anyInt())).thenReturn(itemDto);
 
+
         mockMvc.perform(post("/items")
                         .content(asJsonString(itemDto))
                         .characterEncoding("UTF-8")
@@ -149,4 +150,6 @@ public class ItemControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.text").value("This is a comment."));
     }
+
+
 }

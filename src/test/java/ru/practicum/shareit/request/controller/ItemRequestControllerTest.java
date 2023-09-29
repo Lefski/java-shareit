@@ -7,9 +7,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
 
@@ -98,5 +100,25 @@ public class ItemRequestControllerTest {
                         .header("X-Sharer-User-Id", 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.description").value(itemRequestDto.getDescription()));
+    }
+
+
+    @Test
+    void testGetAllItemRequestsInvalidPaginationParams() throws Exception {
+        mvc.perform(get("/requests/all")
+                        .header("X-Sharer-User-Id", 1)
+                        .param("from", "-1") // Передаем некорректное значение "from"
+                        .param("size", "20"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetRequestNotFound() throws Exception {
+        when(itemRequestService.getRequestById(any(Integer.class), any(Integer.class)))
+                .thenThrow(new NotFoundException("Запрос не найден", HttpStatus.NOT_FOUND));
+
+        mvc.perform(get("/requests/1")
+                        .header("X-Sharer-User-Id", 1))
+                .andExpect(status().isNotFound());
     }
 }
