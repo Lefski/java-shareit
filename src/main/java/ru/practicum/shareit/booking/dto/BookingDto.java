@@ -28,12 +28,6 @@ public class BookingDto {
     public BookingDto() {
     }
 
-    public BookingDto(Integer itemId, LocalDateTime start, LocalDateTime end) {
-        this.itemId = itemId;
-        this.start = start;
-        this.end = end;
-    }
-
     public BookingDto(int id, LocalDateTime start, LocalDateTime end, Item item, User booker, BookingStatus status) {
         this.id = id;
         this.start = start;

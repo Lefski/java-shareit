@@ -12,9 +12,7 @@ import ru.practicum.shareit.user.model.ErrorResponse;
 
 import java.util.List;
 
-/**
- * TODO Sprint add-bookings.
- */
+
 @RestController
 @RequestMapping(path = "/bookings")
 public class BookingController {

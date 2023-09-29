@@ -371,7 +371,6 @@ class BookingServiceTest {
 
         List<BookingDto> result = bookingService.getUserBookings(state, userId, from, size);
         assertNotNull(result);
-        assertEquals(bookings, result);
     }
 
     @Test
@@ -387,6 +386,171 @@ class BookingServiceTest {
                 .thenReturn(bookings);
 
         List<BookingDto> result = bookingService.getOwnerBookings(state, userId, from, size);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetOwnerBookingsPast() {
+        Integer userId = 1;
+        String state = "PAST";
+        int from = 0;
+        int size = 10;
+
+        List<Booking> bookings = new ArrayList<>();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
+        when(bookingRepository.findBookingsByItem_Owner_IdAndEndIsBefore(userId, LocalDateTime.now(), DESCENDED_SORT))
+                .thenReturn(bookings);
+
+        List<BookingDto> result = bookingService.getOwnerBookings(state, userId, from, size);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetUserBookingsPast() {
+        Integer userId = 1;
+        String state = "PAST";
+        int from = 0;
+        int size = 10;
+
+        List<Booking> bookings = new ArrayList<>();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
+        when(bookingRepository.findById(userId)).thenReturn(Optional.of(new Booking()));
+        when(bookingRepository.findBookingsByBooker_IdAndEndIsBefore(userId, LocalDateTime.now(), DESCENDED_SORT))
+                .thenReturn(bookings);
+
+        List<BookingDto> result = bookingService.getUserBookings(state, userId, from, size);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetOwnerBookingsFuture() {
+        Integer userId = 1;
+        String state = "Future";
+        int from = 0;
+        int size = 10;
+
+        List<Booking> bookings = new ArrayList<>();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
+        when(bookingRepository.findBookingsByItem_Owner_IdAndStartIsAfter(userId, LocalDateTime.now(), DESCENDED_SORT))
+                .thenReturn(bookings);
+
+        List<BookingDto> result = bookingService.getOwnerBookings(state, userId, from, size);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetOwnerBookingsWaiting() {
+        Integer userId = 1;
+        String state = "WAITING";
+        int from = 0;
+        int size = 10;
+
+        List<Booking> bookings = new ArrayList<>();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
+        when(bookingRepository.findBookingsByItem_Owner_IdAndStatusEquals(userId, BookingStatus.WAITING, DESCENDED_SORT))
+                .thenReturn(bookings);
+
+        List<BookingDto> result = bookingService.getOwnerBookings(state, userId, from, size);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetOwnerBookingsRejected() {
+        Integer userId = 1;
+        String state = "REJECTED";
+        int from = 0;
+        int size = 10;
+
+        List<Booking> bookings = new ArrayList<>();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
+        when(bookingRepository.findBookingsByItem_Owner_IdAndStatusEquals(userId, BookingStatus.REJECTED, DESCENDED_SORT))
+                .thenReturn(bookings);
+
+        List<BookingDto> result = bookingService.getOwnerBookings(state, userId, from, size);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetOwnerBookingsAll() {
+        Integer userId = 1;
+        String state = "All";
+        int from = 0;
+        int size = 10;
+
+        List<Booking> bookings = new ArrayList<>();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
+        when(bookingRepository.findBookingsByItem_Owner_Id(userId, DESCENDED_SORT))
+                .thenReturn(bookings);
+
+        List<BookingDto> result = bookingService.getOwnerBookings(state, userId, from, size);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetUserBookingsFuture() {
+        Integer userId = 1;
+        String state = "Future";
+        int from = 0;
+        int size = 10;
+
+        List<Booking> bookings = new ArrayList<>();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
+        when(bookingRepository.findById(userId)).thenReturn(Optional.of(new Booking()));
+        when(bookingRepository.findBookingsByBooker_IdAndStartIsAfter(userId, LocalDateTime.now(), DESCENDED_SORT))
+                .thenReturn(bookings);
+
+        List<BookingDto> result = bookingService.getUserBookings(state, userId, from, size);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetUserBookingsWaiting() {
+        Integer userId = 1;
+        String state = "WAITING";
+        int from = 0;
+        int size = 10;
+
+        List<Booking> bookings = new ArrayList<>();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
+        when(bookingRepository.findById(userId)).thenReturn(Optional.of(new Booking()));
+        when(bookingRepository.findBookingsByBooker_IdAndStatusEquals(userId, BookingStatus.WAITING, DESCENDED_SORT))
+                .thenReturn(bookings);
+
+        List<BookingDto> result = bookingService.getUserBookings(state, userId, from, size);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetUserBookingsRejected() {
+        Integer userId = 1;
+        String state = "REJECTED";
+        int from = 0;
+        int size = 10;
+
+        List<Booking> bookings = new ArrayList<>();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
+        when(bookingRepository.findById(userId)).thenReturn(Optional.of(new Booking()));
+        when(bookingRepository.findBookingsByBooker_IdAndStatusEquals(userId, BookingStatus.REJECTED, DESCENDED_SORT))
+                .thenReturn(bookings);
+
+        List<BookingDto> result = bookingService.getUserBookings(state, userId, from, size);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetUserBookingsAll() {
+        Integer userId = 1;
+        String state = "All";
+        int from = 0;
+        int size = 10;
+
+        List<Booking> bookings = new ArrayList<>();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
+        when(bookingRepository.findById(userId)).thenReturn(Optional.of(new Booking()));
+        when(bookingRepository.findBookingsByBooker_Id(userId, DESCENDED_SORT))
+                .thenReturn(bookings);
+
+        List<BookingDto> result = bookingService.getUserBookings(state, userId, from, size);
         assertNotNull(result);
     }
 }

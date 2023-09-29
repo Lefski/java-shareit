@@ -31,7 +31,6 @@ public class ItemController {
     public ItemDto addItem(
             @RequestBody ItemDto itemDto,
             @RequestHeader("X-Sharer-User-Id") Integer ownerId) {
-        ItemDto itemDto1 = itemService.addItem(itemDto, ownerId);
         return itemService.addItem(itemDto, ownerId);
     }
 
