@@ -21,7 +21,6 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -51,7 +50,7 @@ public class ItemServiceImpl implements ItemService {
         return bookingDtosPage;
     }
 
-    private static List<ItemDto> pagingForSearch(int from, int size, List<ItemDto> itemDtoList) {
+    public static List<ItemDto> pagingForSearch(int from, int size, List<ItemDto> itemDtoList) {
         List<ItemDto> bookingDtosPage = new ArrayList<>();
         if (size != 0 && from < itemDtoList.size()) {
             int i = from;
@@ -153,7 +152,7 @@ public class ItemServiceImpl implements ItemService {
 
         // Отсортируем список, из-за каких-то операций в бд элементы расположены не по порядку, возможно неправильно
         // произвожу транзакции, не понял как откорректировать результат в бд, поэтому сортирую на месте
-        Collections.sort(itemDtos, idComparator);
+        itemDtos.sort(idComparator);
         itemDtos = paging(from, size, itemDtos);
         return itemDtos;
     }
@@ -196,9 +195,8 @@ public class ItemServiceImpl implements ItemService {
         }
 
         Comment comment = commentRepository.save(commentMapper.toComment(commentDto));
-        CommentDto commentDto1 = commentMapper.toCommentDto(comment);
 
-        return commentDto1;
+        return commentMapper.toCommentDto(comment);
     }
 
     @Override

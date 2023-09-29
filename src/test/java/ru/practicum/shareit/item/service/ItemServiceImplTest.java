@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -123,6 +124,25 @@ class ItemServiceImplTest {
         assertEquals(itemDto.getName(), resultItemDto.getName());
         assertEquals(itemDto.getDescription(), resultItemDto.getDescription());
         assertEquals(itemDto.getAvailable(), resultItemDto.getAvailable());
+    }
+
+    @Test
+    void testEditItemWithWrongOwner() {
+        Integer itemId = 1;
+        Integer ownerId = 1;
+        User owner = new User("Owner", "owner@example.com");
+        owner.setId(ownerId);
+        ItemDto itemDto = new ItemDto("Updated Item", "Updated Description", true);
+        Item existingItem = new Item("Test Item", "Item Description", true);
+        existingItem.setId(itemId);
+        existingItem.setOwner(owner);
+        NotFoundException ex = new NotFoundException("У вещи другой владелец", HttpStatus.NOT_FOUND);
+
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(existingItem));
+        when(itemRepository.save(any(Item.class))).thenReturn(existingItem);
+
+
+        assertThrows(NotFoundException.class, () -> itemService.editItem(itemId, itemDto, ownerId + 1));
     }
 
 
@@ -266,5 +286,36 @@ class ItemServiceImplTest {
 
         assertNotNull(searchItems);
         assertTrue(searchItems.isEmpty());
+    }
+
+    @Test
+    void testPagingForSearch() {
+        List<ItemDto> itemDtoList = new ArrayList<>();
+        for (int i = 1; i <= 10; i++) {
+            ItemDto itemDto = new ItemDto("Item " + i, "Description " + i, true);
+            itemDtoList.add(itemDto);
+        }
+
+        // Тестируем, что при заданных параметрах from=2 и size=3 вернется правильный подсписок
+        List<ItemDto> result = ItemServiceImpl.pagingForSearch(2, 3, itemDtoList);
+
+        assertEquals(3, result.size());
+        assertEquals("Item 3", result.get(0).getName());
+        assertEquals("Item 4", result.get(1).getName());
+        assertEquals("Item 5", result.get(2).getName());
+    }
+
+    @Test
+    void testSearchItemsWithDifferentParams() {
+        String searchText = "Test";
+        List<Item> searchResults = new ArrayList<>();
+        searchResults.add(new Item("Test Item 1", "Item Description", true));
+        searchResults.add(new Item("Item 2", "Test Description", true));
+
+        when(itemRepository.search(searchText)).thenReturn(searchResults);
+
+        List<ItemDto> searchItems = itemService.searchItems(searchText, 0, 20);
+
+        assertEquals(2, searchItems.size());
     }
 }
