@@ -44,11 +44,6 @@ public class UserService {
 
         User oldUser = UserMapper.toUser(getUserById(id));
         oldUser.setId(id);
-//        if (user.getEmail() != null && !user.getEmail().isBlank()) {
-//            if (!oldUser.getEmail().equals(user.getEmail())) {
-//                validationEmail(user);
-//            }
-//        }
         if (user.getName() != null && !user.getName().isBlank()) {
             oldUser.setName(user.getName());
         }

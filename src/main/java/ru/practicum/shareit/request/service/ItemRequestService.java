@@ -69,7 +69,6 @@ public class ItemRequestService {
             ItemDto itemDto = ItemMapper.toItemDto(item);
             itemDto.setRequestId(itemRequestDto.getId());
             itemDtoList.add(itemDto);
-            //получается неэффективно с этими переборами для перевода в дто, но я не придумал более оптимальный способ
         }
         itemRequestDto.setItems(itemDtoList);
         return itemRequestDto;
@@ -81,7 +80,6 @@ public class ItemRequestService {
         Page<ItemRequest> itemRequestPage = repository.findAll(PageRequest.of(offset, pageSize, Sort.Direction.DESC, "created"));
 
         Page<ItemRequestDto> itemRequestDtos = itemRequestPage.map(ItemRequestMapper::toItemRequestDto);
-        //я решил попробовать пагинацию делать через page, но в тестах нужен именно список
         List<ItemRequestDto> itemRequestDtoList = itemRequestDtos.getContent();
         List<ItemRequestDto> itemRequestDtosWithItemsList = new ArrayList<>();
         for (ItemRequestDto itemRequestDto :
