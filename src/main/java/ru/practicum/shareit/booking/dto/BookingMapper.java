@@ -22,10 +22,6 @@ public class BookingMapper {
     }
 
     public Booking toBooking(BookingDto booking) {
-        /*
-        Вот тут не знаю как корректно реализовать маппинг, потому что в DTO хранится только id итема, а не сам объект,
-        поэтому получаю итем через репозиторий
-        */
         Item item = itemRepository.findById(booking.getItemId()).orElseThrow(() -> new NotFoundException("Item с переданным id не существует", HttpStatus.NOT_FOUND));
         User booker = userRepository.findById(booking.getBookerId()).orElseThrow(() -> new NotFoundException("Пользователя с переданным id не существует", HttpStatus.NOT_FOUND));
         return new Booking(booking.getStart(), booking.getEnd(), item, booker, booking.getStatus());

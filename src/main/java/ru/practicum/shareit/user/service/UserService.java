@@ -23,7 +23,8 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository repository;
 
-    public UserDto createUser(User user) {
+    public UserDto createUser(UserDto userDto) {
+        User user = UserMapper.toUser(userDto);
         validationUser(user);
         log.info("Выполнен запроc на создание пользователя");
         User savedUser = repository.save(user);
@@ -37,16 +38,12 @@ public class UserService {
         return UserMapper.toUserDto(user);
     }
 
-    public UserDto updateUser(Integer id, User user) {
+    public UserDto updateUser(Integer id, UserDto userDto) {
+        User user = UserMapper.toUser(userDto);
         log.info("Выполнен запроc на обновление пользователя");
 
         User oldUser = UserMapper.toUser(getUserById(id));
         oldUser.setId(id);
-        if (user.getEmail() != null && !user.getEmail().isBlank()) {
-            if (!oldUser.getEmail().equals(user.getEmail())) {
-                validationEmail(user);
-            }
-        }
         if (user.getName() != null && !user.getName().isBlank()) {
             oldUser.setName(user.getName());
         }
@@ -70,22 +67,8 @@ public class UserService {
             logValidationUser();
             throw new ValidationException("Некорректный адрес электронной почты, ошибка в употреблении @", HttpStatus.BAD_REQUEST);
         }
-        validationEmail(user);
     }
 
-    private void validationEmail(User user) {
-        /*List<User> usersWithThatEmail = repository.findUserByEmail(user.getEmail());
-        if (!usersWithThatEmail.isEmpty()) {
-            logValidationUser();
-            throw new ValidationException("Адрес электронной почты уже занят", HttpStatus.CONFLICT);
-        }*/
-        /*
-        Здравствуйте, уважаемый проверяющий! Я проверял что почта не дублируется в сервисе, но логика тестов
-        подразумевает, что должна быть ошибка в бд. Я не очень понимаю, эта проверка излишняя потому что бд
-        и так выдаст ошибку при добавлении дубликата? Как вы посоветуете мне тогда обрабатывать эту ошибку,
-        чтобы нормальные логи сохранять?
-         */
-    }
 
     private void logValidationUser() {
         log.warn("Валидация пользователя не пройдена");

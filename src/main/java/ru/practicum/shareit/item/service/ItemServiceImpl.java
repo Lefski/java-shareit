@@ -13,13 +13,14 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -30,10 +31,38 @@ import java.util.List;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository repository;
     private final UserRepository userRepository;
+    private final ItemRequestRepository itemRequestRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
 
+    private static List<ItemDtoWithBookings> paging(int from, int size, List<ItemDtoWithBookings> itemDtoWithBookingsList) {
+        List<ItemDtoWithBookings> bookingDtosPage = new ArrayList<>();
+        if (size != 0 && from < itemDtoWithBookingsList.size()) {
+            int i = from;
+            int sizeCounter = 0;
+            while (i < itemDtoWithBookingsList.size() && sizeCounter < size) {
+                bookingDtosPage.add(itemDtoWithBookingsList.get(i));
+                i++;
+                sizeCounter++;
+            }
+        }
+        return bookingDtosPage;
+    }
+
+    public static List<ItemDto> pagingForSearch(int from, int size, List<ItemDto> itemDtoList) {
+        List<ItemDto> bookingDtosPage = new ArrayList<>();
+        if (size != 0 && from < itemDtoList.size()) {
+            int i = from;
+            int sizeCounter = 0;
+            while (i < itemDtoList.size() && sizeCounter < size) {
+                bookingDtosPage.add(itemDtoList.get(i));
+                i++;
+                sizeCounter++;
+            }
+        }
+        return bookingDtosPage;
+    }
 
     @Override
     public ItemDto addItem(ItemDto itemDto, Integer ownerId) {
@@ -46,11 +75,23 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getDescription() == null || itemDto.getDescription().isBlank()) {
             throw new ValidationException("Некорректное описание Item", HttpStatus.BAD_REQUEST);
         }
-
+        Integer requestId = null;
+        if (itemDto.getRequestId() != null) {
+            requestId = itemDto.getRequestId();
+        }
         User owner = userRepository.findById(ownerId).orElseThrow(() -> new NotFoundException("Владельца с переданным id не существует", HttpStatus.NOT_FOUND));
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(owner);
-        return ItemMapper.toItemDto(repository.save(item));
+        if (requestId != null) {
+            ItemRequest itemRequest = itemRequestRepository.findById(requestId).orElseThrow(() -> new NotFoundException("Запроса с переданным id не существует", HttpStatus.NOT_FOUND));
+            item.setRequest(itemRequest);
+            ItemDto itemDtoWithRequest = ItemMapper.toItemDto(repository.save(item));
+            itemDtoWithRequest.setRequestId(itemRequest.getId());
+            return itemDtoWithRequest;
+        } else {
+            return ItemMapper.toItemDto(repository.save(item));
+        }
+
     }
 
     @Override
@@ -91,9 +132,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoWithBookings> getAllItemsByOwner(Integer ownerId) {
+    public List<ItemDtoWithBookings> getAllItemsByOwner(Integer ownerId, Integer from, Integer size) {
         List<Item> itemList = repository.findByOwnerId(ownerId);
-        ArrayList<ItemDtoWithBookings> itemDtos = new ArrayList<>();
+        List<ItemDtoWithBookings> itemDtos = new ArrayList<>();
         for (Item item : itemList) {
             ItemDtoWithBookings itemDtoWithBooking = ItemMapper.toItemDtoWithBookings(item);
             itemDtoWithBooking = checkItemBookings(itemDtoWithBooking, item.getId());
@@ -111,7 +152,8 @@ public class ItemServiceImpl implements ItemService {
 
         // Отсортируем список, из-за каких-то операций в бд элементы расположены не по порядку, возможно неправильно
         // произвожу транзакции, не понял как откорректировать результат в бд, поэтому сортирую на месте
-        Collections.sort(itemDtos, idComparator);
+        itemDtos.sort(idComparator);
+        itemDtos = paging(from, size, itemDtos);
         return itemDtos;
     }
 
@@ -153,9 +195,8 @@ public class ItemServiceImpl implements ItemService {
         }
 
         Comment comment = commentRepository.save(commentMapper.toComment(commentDto));
-        CommentDto commentDto1 = commentMapper.toCommentDto(comment);
 
-        return commentDto1;
+        return commentMapper.toCommentDto(comment);
     }
 
     @Override
@@ -168,6 +209,20 @@ public class ItemServiceImpl implements ItemService {
         for (Item item : itemList) {
             itemDtos.add(ItemMapper.toItemDto(item));
         }
+        return itemDtos;
+    }
+
+    @Override
+    public List<ItemDto> searchItems(String text, Integer from, Integer size) {
+        if (text.isBlank() || text.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Item> itemList = repository.search(text);
+        List<ItemDto> itemDtos = new ArrayList<>();
+        for (Item item : itemList) {
+            itemDtos.add(ItemMapper.toItemDto(item));
+        }
+        itemDtos = pagingForSearch(from, size, itemDtos);
         return itemDtos;
     }
 }

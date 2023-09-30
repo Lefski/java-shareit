@@ -20,13 +20,6 @@ public class CommentDto {
     public CommentDto() {
     }
 
-    public CommentDto(String text, Item item, User author, LocalDateTime created, String authorName) {
-        this.text = text;
-        this.item = item;
-        this.author = author;
-        this.created = created;
-        this.authorName = authorName;
-    }
 
     public CommentDto(Integer id, String text, Item item, User author, LocalDateTime created, String authorName) {
         this.id = id;

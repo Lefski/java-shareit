@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.Data;
 import ru.practicum.shareit.item.model.Comment;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ public class ItemDto {
     private Boolean available;
     private Integer requestId;
     private List<Comment> comments;
+    private ItemRequestDto request;
 
     public ItemDto() {
 
@@ -30,13 +32,6 @@ public class ItemDto {
         this.description = description;
     }
 
-
-    public ItemDto(String name, String description, Boolean available, Integer requestId) {
-        this.name = name;
-        this.description = description;
-        this.available = available;
-        this.requestId = requestId;
-    }
 
     public ItemDto(int id, String name, String description, Boolean available) {
         this.id = id;

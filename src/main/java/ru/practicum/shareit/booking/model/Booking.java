@@ -39,14 +39,6 @@ public class Booking {
     @Transient
     private int bookerId;
 
-    public Booking(int id, LocalDateTime start, LocalDateTime end, Item item, User booker, BookingStatus status) {
-        this.id = id;
-        this.start = start;
-        this.end = end;
-        this.item = item;
-        this.booker = booker;
-        this.status = status;
-    }
 
     public Booking(LocalDateTime start, LocalDateTime end, Item item, User booker, BookingStatus status) {
         this.start = start;

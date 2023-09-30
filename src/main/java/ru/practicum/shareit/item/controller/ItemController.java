@@ -2,21 +2,25 @@ package ru.practicum.shareit.item.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithBookings;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
+import ru.practicum.shareit.user.model.ErrorResponse;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/items")
+
 public class ItemController {
 
-    private final ItemService itemService;
+    ItemService itemService;
 
     @Autowired
     public ItemController(ItemServiceImpl itemService) {
@@ -24,12 +28,10 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto addItem(@RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") Integer ownerId) {
-        if (ownerId == null) {
-            throw new ValidationException("X-Sharer-User-Id header is missing.", HttpStatus.BAD_REQUEST);
-        }
+    public ItemDto addItem(
+            @RequestBody ItemDto itemDto,
+            @RequestHeader("X-Sharer-User-Id") Integer ownerId) {
         return itemService.addItem(itemDto, ownerId);
-
     }
 
     @PatchMapping("/{itemId}")
@@ -48,16 +50,29 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDtoWithBookings> getAllItemsByOwner(@RequestHeader("X-Sharer-User-Id") Integer ownerId) {
+    public List<ItemDtoWithBookings> getAllItemsByOwner(
+            @RequestParam(required = false, defaultValue = "0") Integer from,
+            @RequestParam(required = false, defaultValue = "20") Integer size,
+            @RequestHeader("X-Sharer-User-Id") Integer ownerId) {
         if (ownerId == null) {
             throw new ValidationException("X-Sharer-User-Id header is missing.", HttpStatus.BAD_REQUEST);
         }
-        return itemService.getAllItemsByOwner(ownerId);
+        if (from < 0 || size <= 0) {
+            throw new ValidationException("Передан некорректный параметр для пагинации", HttpStatus.BAD_REQUEST);
+        }
+        return itemService.getAllItemsByOwner(ownerId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItems(@RequestParam String text) {
-        return itemService.searchItems(text);
+    public List<ItemDto> searchItems(
+            @RequestParam(required = false, defaultValue = "0") Integer from,
+            @RequestParam(required = false, defaultValue = "20") Integer size,
+            @RequestParam String text) {
+        if (from < 0 || size <= 0) {
+            throw new ValidationException("Передан некорректный параметр для пагинации", HttpStatus.BAD_REQUEST);
+        }
+
+        return itemService.searchItems(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
@@ -66,6 +81,18 @@ public class ItemController {
         commentDto.setAuthorId(userId);
         return itemService.addCommentToItem(commentDto);
 
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorResponse> handleCustomException(ValidationException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), ex.getStatus());
+        return new ResponseEntity<>(errorResponse, ex.getStatus());
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), ex.getStatus());
+        return new ResponseEntity<>(errorResponse, ex.getStatus());
     }
 
 }

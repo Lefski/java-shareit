@@ -1,4 +1,4 @@
-package ru.practicum.shareit.request;
+package ru.practicum.shareit.request.model;
 
 import lombok.Data;
 import lombok.ToString;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Data
 public class ItemRequest {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "description")
@@ -25,4 +25,14 @@ public class ItemRequest {
 
     @Column(name = "created")
     private LocalDateTime created;
+
+    public ItemRequest(String description, LocalDateTime created, User requestor) {
+        this.description = description;
+        this.created = created;
+        this.requestor = requestor;
+    }
+
+    public ItemRequest() {
+
+    }
 }

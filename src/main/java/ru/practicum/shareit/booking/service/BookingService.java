@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,7 @@ import java.util.List;
 @Data
 @Slf4j
 @Transactional
+@RequiredArgsConstructor
 public class BookingService {
     private static final Sort DESCENDED_SORT = Sort.by(Sort.Direction.DESC, "start");
 
@@ -39,6 +41,19 @@ public class BookingService {
     private final ItemServiceImpl itemService;
     private final BookingMapper bookingMapper;
 
+    private static List<BookingDto> paging(int from, int size, List<BookingDto> userBookingsDto) {
+        List<BookingDto> bookingDtosPage = new ArrayList<>();
+        if (size != 0 && from < userBookingsDto.size()) {
+            int i = from;
+            int sizeCounter = 0;
+            while (i < userBookingsDto.size() && sizeCounter < size) {
+                bookingDtosPage.add(userBookingsDto.get(i));
+                i++;
+                sizeCounter++;
+            }
+        }
+        return bookingDtosPage;
+    }
 
     public BookingDto addBooking(BookingDto bookingDto, Integer bookerId) {
         log.info("Выполняется запрос на создание бронирования {}", bookingDto.toString());
@@ -92,11 +107,6 @@ public class BookingService {
     public void bookingValidation(BookingDto bookingDto, Integer bookerId) {
         UserDto booker = userService.getUserById(bookerId);
         Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> new NotFoundException("Item с переданным id не существует", HttpStatus.NOT_FOUND));
-        /*
-        Я решил что нет смысла накручивать дополнительные проверки существования юзера и итема, всё равно я уже написал
-        проверки в соответствующих сервисах, ими и воспользуюсь. Я понимаю, что это создает лишнюю нагрузку,
-        но в проекте слишком маленький объем запросов, чтобы это на что-то повлияло.
-        */
         if (!item.getAvailable()) {
             throw new ValidationException("Вещь недоступна для бронирования", HttpStatus.BAD_REQUEST);
         }
@@ -113,7 +123,6 @@ public class BookingService {
 
     }
 
-
     public boolean isBooker(Integer bookingId, Integer userId) {
         Booking booking = repository.findById(bookingId).orElseThrow(() -> new ValidationException("Бронирования с переданным id не существует", HttpStatus.BAD_REQUEST));
         return booking.getBooker().getId() == userId;
@@ -124,7 +133,7 @@ public class BookingService {
         return bookingMapper.toBookingDto(booking);
     }
 
-    public List<BookingDto> getUserBookings(String state, int userId) {
+    public List<BookingDto> getUserBookings(String state, int userId, int from, int size) {
         repository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователя с переданным id не существует", HttpStatus.NOT_FOUND));
 
         List<Booking> userBookings;
@@ -148,15 +157,17 @@ public class BookingService {
                 userBookings = getAllUserBookings(userId);
                 break;
         }
-        ArrayList<BookingDto> userBookingsDto = new ArrayList<>();
+        List<BookingDto> userBookingsDto = new ArrayList<>();
         for (Booking booking :
                 userBookings) {
             userBookingsDto.add(bookingMapper.toBookingDto(booking));
         }
+        userBookingsDto = paging(from, size, userBookingsDto);
+        //возвращаем страницу
         return userBookingsDto;
     }
 
-    public List<BookingDto> getOwnerBookings(String state, int userId) {
+    public List<BookingDto> getOwnerBookings(String state, int userId, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователя с переданным id не существует", HttpStatus.NOT_FOUND));
         List<Booking> userBookings;
         switch (state.toUpperCase()) {
@@ -179,11 +190,13 @@ public class BookingService {
                 userBookings = getAllOwnerBookings(userId);
                 break;
         }
-        ArrayList<BookingDto> userBookingsDto = new ArrayList<>();
+        List<BookingDto> userBookingsDto = new ArrayList<>();
         for (Booking booking :
                 userBookings) {
             userBookingsDto.add(bookingMapper.toBookingDto(booking));
         }
+        userBookingsDto = paging(from, size, userBookingsDto);
+        //возвращаем страницу
         return userBookingsDto;
     }
 
