@@ -217,7 +217,7 @@ class BookingServiceTest {
     void testApproveBookingWithInvalidStatus() {
         Integer bookingId = 1;
 
-        booking.setStatus(BookingStatus.APPROVED); // Already approved
+        booking.setStatus(BookingStatus.APPROVED);
 
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
 
@@ -229,7 +229,7 @@ class BookingServiceTest {
     void testRejectBookingWithInvalidStatus() {
         Integer bookingId = 1;
 
-        booking.setStatus(BookingStatus.APPROVED); // Already approved
+        booking.setStatus(BookingStatus.APPROVED);
 
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
 
@@ -326,7 +326,7 @@ class BookingServiceTest {
         Integer userId = 1;
 
         User booker = new User();
-        booker.setId(2); // Not the same as userId
+        booker.setId(2);
         booking.setBooker(booker);
 
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));

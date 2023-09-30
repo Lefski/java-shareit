@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,7 @@ import java.util.List;
 @Data
 @Slf4j
 @Transactional
+@RequiredArgsConstructor
 public class BookingService {
     private static final Sort DESCENDED_SORT = Sort.by(Sort.Direction.DESC, "start");
 

@@ -66,7 +66,7 @@ public class BookingRepositoryTest {
 
     @Test
     void testFindNearestPastBooking() {
-        Integer itemId = item.getId(); // Используем ID созданного item
+        Integer itemId = item.getId();
         List<Booking> nearestPastBookings = bookingRepository.findNearestPastBooking(itemId);
 
         assertNotNull(nearestPastBookings);
@@ -76,7 +76,7 @@ public class BookingRepositoryTest {
 
     @Test
     void testFindNearestFutureBooking() {
-        Integer itemId = item.getId(); // Используем ID созданного item
+        Integer itemId = item.getId();
         List<Booking> nearestFutureBookings = bookingRepository.findNearestFutureBooking(itemId);
 
         assertNotNull(nearestFutureBookings);

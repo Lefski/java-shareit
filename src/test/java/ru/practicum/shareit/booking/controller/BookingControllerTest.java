@@ -74,7 +74,7 @@ public class BookingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 1))
                 .andExpect(status().isOk())
-                .andExpect(content().json(bookingDtoJson)); // Возвращаем JSON объекта bookingDto
+                .andExpect(content().json(bookingDtoJson));
     }
 
 
@@ -96,7 +96,6 @@ public class BookingControllerTest {
     void testGetBookingDetails() throws Exception {
         when(bookingService.getBookingById(any(Integer.class))).thenReturn(bookingDto);
         when(bookingService.isBookingOwner(any(Integer.class), any(Integer.class))).thenReturn(true);
-        // Выполняем GET запрос, используя параметры из bookingDto
         mvc.perform(get("/bookings/{1}", bookingDto.getId())
                         .characterEncoding("UTF-8")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -110,7 +109,6 @@ public class BookingControllerTest {
         when(bookingService.getOwnerBookings(any(String.class), any(Integer.class), any(Integer.class), any(Integer.class)))
                 .thenReturn(Collections.singletonList(bookingDto));
 
-        // Выполняем GET запрос, используя параметры из bookingDto
         mvc.perform(get("/bookings/owner")
                         .param("state", "ALL")
                         .param("from", "0")
@@ -127,7 +125,6 @@ public class BookingControllerTest {
         when(bookingService.getUserBookings(any(String.class), any(Integer.class), any(Integer.class), any(Integer.class)))
                 .thenReturn(Collections.singletonList(bookingDto));
 
-        // Выполняем GET запрос, используя параметры из bookingDto
         mvc.perform(get("/bookings")
                         .param("state", "ALL")
                         .param("from", "0")
