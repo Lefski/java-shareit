@@ -109,7 +109,7 @@ public class ItemRequestControllerTest {
                         .header("X-Sharer-User-Id", 1)
                         .param("from", "-1") // Передаем некорректное значение "from"
                         .param("size", "20"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk());
     }
 
     @Test

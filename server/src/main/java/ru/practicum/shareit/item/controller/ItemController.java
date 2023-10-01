@@ -36,9 +36,6 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ItemDto editItem(@PathVariable int itemId, @RequestBody ItemDto item, @RequestHeader("X-Sharer-User-Id") Integer ownerId) {
-        if (ownerId == null) {
-            throw new ValidationException("X-Sharer-User-Id header is missing.", HttpStatus.BAD_REQUEST);
-        }
         return itemService.editItem(itemId, item, ownerId);
 
     }
@@ -54,12 +51,6 @@ public class ItemController {
             @RequestParam(required = false, defaultValue = "0") Integer from,
             @RequestParam(required = false, defaultValue = "20") Integer size,
             @RequestHeader("X-Sharer-User-Id") Integer ownerId) {
-        if (ownerId == null) {
-            throw new ValidationException("X-Sharer-User-Id header is missing.", HttpStatus.BAD_REQUEST);
-        }
-        if (from < 0 || size <= 0) {
-            throw new ValidationException("Передан некорректный параметр для пагинации", HttpStatus.BAD_REQUEST);
-        }
         return itemService.getAllItemsByOwner(ownerId, from, size);
     }
 
@@ -68,10 +59,6 @@ public class ItemController {
             @RequestParam(required = false, defaultValue = "0") Integer from,
             @RequestParam(required = false, defaultValue = "20") Integer size,
             @RequestParam String text) {
-        if (from < 0 || size <= 0) {
-            throw new ValidationException("Передан некорректный параметр для пагинации", HttpStatus.BAD_REQUEST);
-        }
-
         return itemService.searchItems(text, from, size);
     }
 

@@ -1,7 +1,6 @@
 package ru.practicum.shareit.request.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -10,7 +9,6 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.user.model.ErrorResponse;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -27,10 +25,6 @@ public class ItemRequestController {
     @PostMapping
     public ItemRequestDto addItemRequest(@RequestBody ItemRequestDto itemRequestDto,
                                          @RequestHeader("X-Sharer-User-Id") Integer userId) {
-        if (itemRequestDto.getCreated() == null) {
-            itemRequestDto.setCreated(LocalDateTime.now());
-            //при получении ставим время получения запроса
-        }
 
         return itemRequestService.createItemRequest(itemRequestDto, userId);
     }
@@ -48,9 +42,6 @@ public class ItemRequestController {
             @RequestParam(required = false, defaultValue = "0") Integer from,
             @RequestParam(required = false, defaultValue = "20") Integer size
     ) {
-        if (from < 0 || size < 0) {
-            throw new ValidationException("Передан некорректный параметр для пагинации", HttpStatus.BAD_REQUEST);
-        }
         Integer offset = from / size;
 
         return itemRequestService.getAllItemRequests(userId, offset, size);
