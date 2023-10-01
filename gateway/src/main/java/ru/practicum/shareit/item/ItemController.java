@@ -91,8 +91,6 @@ public class ItemController {
             @Validated @RequestBody CommentDto commentDto,
             @RequestHeader("X-Sharer-User-Id") Integer userId
     ) {
-        commentDto.setItemId(itemId);
-        commentDto.setAuthorId(userId);
         log.info("Creating comment for itemId = {}, by userId = {}, comment {}", itemId, userId, commentDto);
 
         return itemClient.addCommentToItem(commentDto, itemId, userId);
