@@ -1,7 +1,7 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.Data;
-import ru.practicum.shareit.request.ItemRequestDto;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
 
 
 @Data
