@@ -56,6 +56,7 @@ public class BookingController {
             @RequestParam Boolean approved,
             @RequestHeader("X-Sharer-User-Id") Integer bookerId
     ) {
+        log.info("Changing booking status, booking id {}, appruved = {}", bookingId, approved);
         return bookingClient.approveOrRejectBooking(bookingId, bookerId, approved);
     }
 

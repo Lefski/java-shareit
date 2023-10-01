@@ -29,6 +29,7 @@ public class ItemController {
     public ResponseEntity<Object> addItem(
             @RequestBody @Valid ItemDto itemDto,
             @RequestHeader("X-Sharer-User-Id") Integer ownerId) {
+        log.info("Creating item {}, creatorId = {}", itemDto, ownerId);
         return itemClient.addItem(itemDto, ownerId);
     }
 
@@ -40,6 +41,8 @@ public class ItemController {
         if (ownerId == null) {
             throw new ValidationException("X-Sharer-User-Id header is missing.", HttpStatus.BAD_REQUEST);
         }
+        log.info("Updating item {}, itemid = {}, creatorId = {}", item, itemId, ownerId);
+
         return itemClient.editItem(itemId, item, ownerId);
 
     }
@@ -48,6 +51,8 @@ public class ItemController {
     public ResponseEntity<Object> getItemById(
             @PathVariable int itemId,
             @RequestHeader("X-Sharer-User-Id") Integer userId) {
+        log.info("Getting item by itemId = {}, userId = {}", itemId, userId);
+
         return itemClient.getItemById(itemId, userId);
 
     }
@@ -63,6 +68,8 @@ public class ItemController {
         if (from < 0 || size <= 0) {
             throw new ValidationException("Передан некорректный параметр для пагинации", HttpStatus.BAD_REQUEST);
         }
+        log.info("Getting all items, userId = {}, size = {}, from = {}", ownerId, size, from);
+
         return itemClient.getAllItemsByOwner(ownerId, from, size);
     }
 
@@ -74,7 +81,7 @@ public class ItemController {
         if (from < 0 || size <= 0) {
             throw new ValidationException("Передан некорректный параметр для пагинации", HttpStatus.BAD_REQUEST);
         }
-
+        log.info("Getting all items by search, size = {}, from = {}, text = {}", size, from, text);
         return itemClient.searchItems(text, from, size);
     }
 
@@ -86,6 +93,8 @@ public class ItemController {
     ) {
         commentDto.setItemId(itemId);
         commentDto.setAuthorId(userId);
+        log.info("Creating comment for itemId = {}, by userId = {}, comment {}", itemId, userId, commentDto);
+
         return itemClient.addCommentToItem(commentDto, itemId, userId);
 
     }
