@@ -51,6 +51,7 @@ public class UserController {
     public ResponseEntity<Object> deleteUser(
             @PathVariable Integer id
     ) {
+        log.info("Deleating user {}", id);
         return userClient.deleteUser(id);
     }
 

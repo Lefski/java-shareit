@@ -31,7 +31,7 @@ public class ItemRequestController {
             itemRequestDto.setCreated(LocalDateTime.now());
             //при получении ставим время получения запроса
         }
-
+        log.info("Creating itemRequest {}, by userId {}", itemRequestDto, userId);
         return itemRequestClient.createItemRequest(itemRequestDto, userId);
     }
 
@@ -39,6 +39,8 @@ public class ItemRequestController {
     public ResponseEntity<Object> getItemRequests(
             @RequestHeader("X-Sharer-User-Id") Integer userId
     ) {
+        log.info("Getting itemRequests by userId {}", userId);
+
         return itemRequestClient.getAllItemRequestsByOwner(userId);
     }
 
@@ -49,6 +51,7 @@ public class ItemRequestController {
             @Positive @RequestParam(required = false, defaultValue = "20") Integer size
     ) {
 
+        log.info("Getting itemRequests by userId {}, size {}, from {}", userId, size, from);
 
         return itemRequestClient.getAllItemRequests(userId, from, size);
     }
@@ -57,6 +60,7 @@ public class ItemRequestController {
     public ResponseEntity<Object> getRequest(
             @RequestHeader("X-Sharer-User-Id") Integer userId,
             @PathVariable Integer requestId) {
+        log.info("Getting itemRequest {} by userId {}", requestId, userId);
         return itemRequestClient.getRequestById(requestId, userId);
     }
 
